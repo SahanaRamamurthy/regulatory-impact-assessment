@@ -1,0 +1,18 @@
+Australian Privacy Principles (APPs) — Regulatory Reference
+
+Source: Australian Privacy Principles
+Jurisdiction: Commonwealth of Australia — Privacy Act 1988 (Cth)
+
+---
+
+Section: APP 11
+Title: Security of Personal Information
+
+An APP entity must take such steps as are reasonable in the circumstances to protect the personal information it holds from misuse, interference, and loss, as well as from unauthorised access, modification, or disclosure. If an APP entity no longer needs personal information for any purpose for which it may be used or disclosed under the APPs, the entity must take such steps as are reasonable to destroy the information or to ensure that the information is de-identified, unless the personal information is contained in a Commonwealth record, or the entity is required by or under an Australian law or a court/tribunal order to retain the personal information.
+
+---
+
+Section: APP 7
+Title: Direct Marketing
+
+An organisation must not use or disclose personal information about an individual for the purpose of direct marketing unless: the organisation collected the information from the individual, the individual would reasonably expect the information to be used for direct marketing, the organisation provides a simple means to opt out, and the individual has not opted out. If the organisation collected sensitive information about the individual, it must not use or disclose the information for direct marketing unless the individual has consented to the use or disclosure for that purpose.

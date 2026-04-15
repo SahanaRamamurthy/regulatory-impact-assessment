@@ -1,0 +1,91 @@
+AUSTRALIAN RED CROSS LIFEBLOOD
+PLATELET DONATION — FACTS AND PROCESS
+Version 1.8 | Updated January 2025
+
+========================================
+WHAT ARE PLATELETS?
+========================================
+
+Platelets (thrombocytes) are tiny, colourless cell fragments in the blood whose primary role is to form clots and stop bleeding. They are produced in the bone marrow and have a lifespan of only 7–10 days in the body.
+
+In a clinical context, platelet transfusions are used for:
+
+  - Patients with thrombocytopenia (dangerously low platelet count) — common in leukaemia, lymphoma, and other haematological cancers, or as a side effect of chemotherapy.
+  - Patients undergoing major surgery who have low platelet counts.
+  - Patients with platelet function disorders (e.g., Glanzmann thrombasthenia, Bernard-Soulier syndrome).
+  - Trauma and massive haemorrhage protocols.
+
+One platelet donation from a single apheresis procedure can provide enough platelets to treat one adult cancer patient for an entire day of chemotherapy.
+
+========================================
+THE PLATELET DONATION PROCESS
+========================================
+
+Like plasma, platelets are collected by apheresis.
+
+  1. REGISTRATION & HEALTH SCREENING (approx. 15 min)
+     Includes identity verification, health questionnaire, fingerprick haemoglobin test, and platelet count estimation.
+
+     Note: Donors must have a minimum platelet count of 200 x 10^9/L to proceed with platelet donation. If the count is adequate, donation proceeds.
+
+  2. VENEPUNCTURE (approx. 5 min)
+     Sterile needle insertion, usually in the antecubital fossa.
+
+  3. APHERESIS CYCLE (approx. 60–90 min)
+     The apheresis machine processes the blood multiple times, extracting platelets with each pass. The procedure takes longer than plasma donation because platelet separation requires more cycles.
+
+  4. RECOVERY (approx. 15 min)
+     Rest, refreshments, and monitoring before departure.
+
+Total visit time: approximately 90–120 minutes.
+
+========================================
+PLATELET SHELF LIFE — WHY REGULAR DONATIONS MATTER
+========================================
+
+Unlike red blood cells (which can be stored for up to 42 days) or frozen plasma (stored for up to 2 years), platelets have an extremely short shelf life:
+
+  Storage temperature:  20–24 degrees Celsius (room temperature, with agitation)
+  Maximum storage:      7 days from collection (in Australia, hospitals typically use within 5 days)
+
+This very short shelf life means that a consistent, frequent supply of platelet donors is essential. There can be no "stockpiling" of platelets — the supply chain must be continuous.
+
+========================================
+IRRADIATED PLATELETS
+========================================
+
+Certain patient groups — including bone marrow transplant recipients, patients with Hodgkin's lymphoma, and severely immunocompromised individuals — must receive IRRADIATED blood products. Irradiation inactivates donor T-lymphocytes that contaminate platelet concentrates, preventing Transfusion-Associated Graft-versus-Host Disease (TA-GvHD), which can be fatal.
+
+Lifeblood irradiates platelet units on request from hospital blood banks. Irradiation does not affect platelet function.
+
+========================================
+ELIGIBILITY SPECIFIC TO PLATELET DONATION
+========================================
+
+  - Minimum platelet count: 200 x 10^9/L (checked at each visit).
+  - Donors must NOT have taken aspirin or ibuprofen in the 3 days before donation. These medications impair platelet function. Paracetamol is acceptable.
+  - Donors must NOT have taken any anticoagulant medication (e.g., warfarin, rivaroxaban, dabigatran) in the 14 days prior.
+  - Frequency: Every 2 weeks, maximum 24 times per year.
+
+========================================
+WHAT HAPPENS TO PLATELET DONATIONS?
+========================================
+
+After collection, platelet units are:
+  1. Tested for bacterial contamination using aerobic and anaerobic culture.
+  2. ABO and Rh typed.
+  3. Leukodepleted (white cells removed by filtration to reduce febrile non-haemolytic reactions and CMV transmission).
+  4. Stored in agitators at 20–24°C until issued to hospitals.
+
+Each apheresis platelet unit collected from a single donor is equivalent in therapeutic dose to approximately 4–6 whole-blood-derived platelet concentrates (pooled from multiple donors). Single-donor (apheresis) platelets are therefore preferred to reduce the number of donor exposures for a single patient.
+
+========================================
+CONTACT
+========================================
+
+Phone: 13 14 95
+Website: www.lifeblood.com.au/give-platelets
+
+========================================
+END OF DOCUMENT
+========================================

@@ -1,0 +1,143 @@
+{
+  "document": {
+    "title": "Lifeblood Donor Centre Operations — Reference Data",
+    "version": "3.0",
+    "issued_by": "Australian Red Cross Lifeblood",
+    "last_updated": "2025-02-01",
+    "classification": "Internal / Public Reference"
+  },
+  "donor_centres": [
+    {
+      "id": "DC-NSW-001",
+      "name": "Sydney Donor Centre",
+      "state": "NSW",
+      "address": "Level 1, 17 O'Riordan Street, Alexandria NSW 2015",
+      "phone": "13 14 95",
+      "opening_hours": {
+        "Monday": "08:00–18:00",
+        "Tuesday": "08:00–18:00",
+        "Wednesday": "08:00–20:00",
+        "Thursday": "08:00–20:00",
+        "Friday": "08:00–18:00",
+        "Saturday": "08:00–14:00",
+        "Sunday": "Closed"
+      },
+      "services": ["whole_blood", "plasma", "platelets"],
+      "annual_capacity_donations": 48000
+    },
+    {
+      "id": "DC-VIC-001",
+      "name": "Melbourne Donor Centre (Bourke Street)",
+      "state": "VIC",
+      "address": "570 Bourke Street, Melbourne VIC 3000",
+      "phone": "13 14 95",
+      "opening_hours": {
+        "Monday": "08:00–18:00",
+        "Tuesday": "08:00–20:00",
+        "Wednesday": "08:00–20:00",
+        "Thursday": "08:00–20:00",
+        "Friday": "08:00–18:00",
+        "Saturday": "08:00–14:00",
+        "Sunday": "Closed"
+      },
+      "services": ["whole_blood", "plasma", "platelets"],
+      "annual_capacity_donations": 55000
+    },
+    {
+      "id": "DC-QLD-001",
+      "name": "Brisbane Donor Centre",
+      "state": "QLD",
+      "address": "44 Musk Avenue, Kelvin Grove QLD 4059",
+      "phone": "13 14 95",
+      "opening_hours": {
+        "Monday": "08:00–18:00",
+        "Tuesday": "08:00–18:00",
+        "Wednesday": "08:00–18:00",
+        "Thursday": "08:00–18:00",
+        "Friday": "08:00–18:00",
+        "Saturday": "09:00–13:00",
+        "Sunday": "Closed"
+      },
+      "services": ["whole_blood", "plasma"],
+      "annual_capacity_donations": 32000
+    },
+    {
+      "id": "DC-WA-001",
+      "name": "Perth Donor Centre",
+      "state": "WA",
+      "address": "310 Wellington Street, Perth WA 6000",
+      "phone": "13 14 95",
+      "opening_hours": {
+        "Monday": "08:00–17:00",
+        "Tuesday": "08:00–17:00",
+        "Wednesday": "08:00–17:00",
+        "Thursday": "08:00–17:00",
+        "Friday": "08:00–17:00",
+        "Saturday": "09:00–13:00",
+        "Sunday": "Closed"
+      },
+      "services": ["whole_blood", "plasma"],
+      "annual_capacity_donations": 28000
+    },
+    {
+      "id": "DC-SA-001",
+      "name": "Adelaide Donor Centre",
+      "state": "SA",
+      "address": "117 King William Street, Adelaide SA 5000",
+      "phone": "13 14 95",
+      "opening_hours": {
+        "Monday": "08:00–18:00",
+        "Tuesday": "08:00–18:00",
+        "Wednesday": "08:00–18:00",
+        "Thursday": "08:00–18:00",
+        "Friday": "08:00–18:00",
+        "Saturday": "09:00–13:00",
+        "Sunday": "Closed"
+      },
+      "services": ["whole_blood", "plasma"],
+      "annual_capacity_donations": 21000
+    }
+  ],
+  "mobile_units": {
+    "description": "Lifeblood operates mobile blood collection units that visit regional towns, corporate sites, and community venues across Australia.",
+    "visit_frequency": "Each regional location visited 4–12 times per year depending on population and need.",
+    "services_offered": ["whole_blood"],
+    "booking_required": true,
+    "minimum_donors_to_operate": 20
+  },
+  "donation_targets": {
+    "annual_whole_blood_target_units": 1300000,
+    "annual_plasma_target_litres": 1200000,
+    "description": "Australia aims to be self-sufficient in plasma-derived medicinal products. Meeting the plasma target reduces reliance on imported immunoglobulin.",
+    "current_plasma_self_sufficiency_pct": 74
+  },
+  "blood_product_storage": {
+    "whole_blood_red_cells": {
+      "temperature_celsius": "2–6",
+      "max_storage_days": 42,
+      "anticoagulant_preservative": "SAGM (saline, adenine, glucose, mannitol)"
+    },
+    "fresh_frozen_plasma": {
+      "temperature_celsius": "-25 or below",
+      "max_storage_months": 24,
+      "notes": "Must be thawed to 37°C before transfusion; use within 4 hours of thawing."
+    },
+    "platelets": {
+      "temperature_celsius": "20–24",
+      "max_storage_days": 7,
+      "agitation_required": true,
+      "notes": "Stored with continuous gentle agitation to prevent clumping."
+    },
+    "cryoprecipitate": {
+      "temperature_celsius": "-25 or below",
+      "max_storage_months": 24,
+      "contains": ["Factor VIII", "von Willebrand factor", "fibrinogen", "Factor XIII", "fibronectin"]
+    }
+  },
+  "emergency_contacts": {
+    "donor_helpline": "13 14 95",
+    "hospital_blood_bank_support": "1800 BLOOD 1 (1800 25663 1)",
+    "adverse_event_reporting": "1800 812 189",
+    "after_hours_hospital_emergency": "Available 24/7 via hospital blood bank hotline"
+  }
+}

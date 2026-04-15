@@ -1,0 +1,17 @@
+HIPAA Security Rule — Regulatory Reference
+
+Source: HIPAA Security Rule
+
+---
+
+Section: 45 CFR § 164.308
+Title: Administrative Safeguards
+
+A covered entity or business associate must implement policies and procedures to prevent, detect, contain, and correct security violations. Conduct an accurate and thorough assessment of the potential risks and vulnerabilities to the confidentiality, integrity, and availability of electronic protected health information. Implement security measures sufficient to reduce risks and vulnerabilities to a reasonable and appropriate level. Apply appropriate sanctions against workforce members who fail to comply with the security policies and procedures of the covered entity or business associate. Implement procedures to regularly review records of information system activity, such as audit logs, access reports, and security incident tracking reports.
+
+---
+
+Section: 45 CFR § 164.312
+Title: Technical Safeguards
+
+A covered entity or business associate must implement technical policies and procedures for electronic information systems that maintain electronic protected health information to allow access only to those persons or software programs that have been granted access rights. Implement technical security measures to guard against unauthorized access to electronic protected health information that is being transmitted over an electronic communications network. Implement hardware, software, and/or procedural mechanisms that record and examine activity in information systems that contain or use electronic protected health information. Implement policies and procedures to protect electronic protected health information from improper alteration or destruction. Implement a mechanism to encrypt and decrypt electronic protected health information.

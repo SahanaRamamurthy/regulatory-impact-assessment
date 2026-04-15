@@ -1,0 +1,24 @@
+HIPAA Privacy Rule — Regulatory Reference
+
+Source: HIPAA Privacy Rule
+
+---
+
+Section: 45 CFR § 164.502
+Title: Uses and Disclosures of Protected Health Information
+
+A covered entity or business associate may not use or disclose protected health information, except as permitted or required by this subpart. A covered entity may disclose protected health information to the individual who is the subject of the information. A covered entity may use or disclose protected health information for its own treatment, payment, or health care operations activities. A covered entity may disclose protected health information for the treatment activities of any health care provider, for the payment activities of another covered entity, or for health care operations of another covered entity, if both entities have or had a relationship with the individual and the PHI pertains to that relationship.
+
+---
+
+Section: 45 CFR § 164.514
+Title: De-identification of Protected Health Information
+
+Health information that does not identify an individual and with respect to which there is no reasonable basis to believe that the information can be used to identify an individual is not individually identifiable health information. A covered entity may determine that health information is not individually identifiable health information only if: an expert determines that the risk is very small that the information could be used to identify the individual; or the following identifiers of the individual or of relatives, employers, or household members are removed: names, geographic subdivisions smaller than a state, dates (except year), phone numbers, fax numbers, email addresses, social security numbers, medical record numbers, health plan beneficiary numbers, account numbers, certificate/license numbers, vehicle identifiers, device identifiers, URLs, IP addresses, biometric identifiers, full-face photographs, and any other unique identifying number or code.
+
+---
+
+Section: 45 CFR § 164.410
+Title: Notification by a Business Associate (Breach Notification Rule)
+
+A business associate shall notify the covered entity following the discovery of a breach of unsecured protected health information. A business associate shall provide notice to the covered entity without unreasonable delay and in no case later than 60 calendar days after discovery of the breach. The notice shall include, to the extent possible, the identification of each individual whose unsecured protected health information has been, or is reasonably believed to have been, accessed, acquired, used, or disclosed during the breach, as well as any other available information that the covered entity is required to include in notification to the individual.

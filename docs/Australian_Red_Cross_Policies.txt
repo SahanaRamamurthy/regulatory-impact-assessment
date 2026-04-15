@@ -1,0 +1,17 @@
+Australian Red Cross Blood Service — Internal Policy Reference
+
+Source: Australian Red Cross Blood Service Policy
+
+---
+
+Section: Data Governance Policy v3.2
+Title: Donor Data Collection and Retention
+
+All donor personal information collected by the Australian Red Cross Blood Service must be handled in accordance with the Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs). Donor health information is classified as sensitive information under APP 3 and requires explicit consent before collection. Donor records must be retained for a minimum of 30 years from the date of last donation to support traceability requirements under the Therapeutic Goods Act 1989. Access to donor records must be restricted to authorised personnel with a legitimate need-to-know and must be logged for audit purposes. Donor data must not be used for secondary purposes without obtaining fresh consent from the donor.
+
+---
+
+Section: Informed Consent Policy v2.1
+Title: Informed Consent for Blood Donation
+
+Prior to each donation, donors must provide informed consent for the collection, testing, and potential use of their blood. Consent must be voluntary, specific, informed, and unambiguous. Donors must be informed about the types of tests performed on donated blood, how their personal and health information will be used, their rights to access and correct their personal information, and any potential risks associated with donation. Consent forms must be available in accessible formats and donors must have the opportunity to ask questions. Withdrawal of consent must be honoured at any time without prejudice to the donor.

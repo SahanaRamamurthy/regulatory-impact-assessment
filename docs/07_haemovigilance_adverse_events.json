@@ -1,0 +1,98 @@
+{
+  "document": {
+    "title": "Haemovigilance — Adverse Donation and Transfusion Events Reference",
+    "version": "2.5",
+    "issued_by": "Australian Red Cross Lifeblood — Medical & Scientific",
+    "last_updated": "2024-11-01"
+  },
+  "adverse_donor_reactions": {
+    "description": "Adverse reactions can occur during or after donation. Lifeblood staff are trained to identify, grade, and manage all reaction types.",
+    "classification_system": "ISBT (International Society of Blood Transfusion) grading, adapted for Australian context.",
+    "reactions": [
+      {
+        "name": "Vasovagal Reaction (VVR)",
+        "also_known_as": "Fainting or pre-syncope",
+        "frequency": "Approximately 2–5% of whole blood donations; lower for apheresis.",
+        "description": "A neurally-mediated response causing sudden drop in blood pressure and heart rate. Triggered by anxiety, pain, sight of blood, or reduced blood volume.",
+        "grades": [
+          {"grade": 1, "description": "Mild: pallor, sweating, nausea without loss of consciousness."},
+          {"grade": 2, "description": "Moderate: brief loss of consciousness < 60 seconds, rapid recovery."},
+          {"grade": 3, "description": "Severe: prolonged loss of consciousness > 60 seconds or injury due to fall."}
+        ],
+        "management": "Elevate legs, ensure airway, apply cold compress, monitor vitals. Grade 3: call emergency services."
+      },
+      {
+        "name": "Haematoma",
+        "frequency": "Approximately 0.5–1% of donations.",
+        "description": "Bruising caused by blood leaking from the vein into surrounding tissue during or after venepuncture.",
+        "grades": [
+          {"grade": 1, "description": "Small bruise confined to needle site."},
+          {"grade": 2, "description": "Moderate bruise extending beyond needle site."},
+          {"grade": 3, "description": "Large haematoma causing significant pain or neurovascular compromise."}
+        ],
+        "management": "Apply firm pressure and cold pack. Grade 3: refer for medical assessment."
+      },
+      {
+        "name": "Nerve Injury",
+        "frequency": "Rare: approximately 1 in 6,000 donations.",
+        "description": "Needle contacts a nerve branch at the antecubital fossa, causing sharp radiating pain, numbness, or tingling in the arm or hand.",
+        "management": "Remove needle immediately if nerve contact suspected. Refer to GP if symptoms persist beyond 24 hours."
+      },
+      {
+        "name": "Citrate Reaction (Apheresis Only)",
+        "frequency": "Mild symptoms in up to 15% of apheresis donors.",
+        "description": "Citrate anticoagulant used in apheresis temporarily chelates calcium ions in the blood, causing hypocalcaemia symptoms.",
+        "symptoms": ["Perioral tingling", "Fingertip tingling", "Muscle cramps", "Chills", "Rarely: cardiac arrhythmia in severe cases"],
+        "management": "Reduce apheresis flow rate or temporarily pause. Oral calcium (e.g., Tums) may be offered. Severe cases: IV calcium gluconate."
+      },
+      {
+        "name": "Arterial Puncture",
+        "frequency": "Very rare: approximately 1 in 100,000 donations.",
+        "description": "Accidental needle insertion into an artery rather than a vein. Identified by rapid, bright red blood flow and pulsatile pressure in tubing.",
+        "management": "Remove needle immediately, apply firm pressure for minimum 10 minutes, monitor, refer for medical assessment."
+      }
+    ]
+  },
+  "adverse_transfusion_reactions": {
+    "description": "Transfusion reactions occur in the recipient after infusion of blood products. Lifeblood supports hospital blood bank haemovigilance reporting.",
+    "reactions": [
+      {
+        "name": "Febrile Non-Haemolytic Transfusion Reaction (FNHTR)",
+        "frequency": "Common: up to 0.5% of red cell transfusions; higher with platelets (now reduced by leukodepletion).",
+        "description": "Temperature rise ≥ 1°C during or within 4 hours of transfusion, not attributable to haemolysis or infection.",
+        "management": "Stop transfusion, assess for haemolysis (send samples to blood bank). If FNHTR confirmed, can restart at reduced rate with antipyretic cover."
+      },
+      {
+        "name": "Acute Haemolytic Transfusion Reaction (AHTR)",
+        "frequency": "Rare: approximately 1 in 76,000 transfusions. Almost always due to ABO incompatibility from clerical error.",
+        "severity": "Potentially fatal.",
+        "symptoms": ["Fever and chills", "Back and flank pain", "Haemoglobinuria (red/dark urine)", "Hypotension", "Disseminated Intravascular Coagulation (DIC)"],
+        "management": "STOP transfusion immediately. Maintain IV access, fluid resuscitation, send blood bank samples, activate hospital transfusion emergency protocol."
+      },
+      {
+        "name": "Transfusion-Related Acute Lung Injury (TRALI)",
+        "frequency": "Approximately 1 in 5,000–10,000 transfusions; reduced significantly by male-only plasma strategy.",
+        "description": "New onset acute lung injury within 6 hours of transfusion, characterised by hypoxia and bilateral pulmonary infiltrates, not due to circulatory overload.",
+        "management": "Supportive care, oxygen, possible ICU. Report to Lifeblood for investigation of implicated unit/donor."
+      },
+      {
+        "name": "Transfusion-Associated Circulatory Overload (TACO)",
+        "frequency": "Most common serious transfusion reaction: up to 1 in 100 in at-risk populations (elderly, cardiac/renal disease).",
+        "description": "Acute pulmonary oedema due to fluid overload from transfusion, presenting with respiratory distress, hypertension, and raised jugular venous pressure.",
+        "management": "Stop or slow transfusion, diuretics, upright positioning, oxygen."
+      },
+      {
+        "name": "Transfusion-Associated Graft-versus-Host Disease (TA-GvHD)",
+        "frequency": "Rare but mortality rate > 90%.",
+        "description": "Donor T-lymphocytes in the blood product engraft in an immunocompromised recipient and attack host tissues. Prevented by irradiation of cellular components for at-risk patients.",
+        "prevention": "Irradiation of red cells and platelets for immunocompromised patients, HLA-matched donors, or directed family donations."
+      }
+    ]
+  },
+  "reporting": {
+    "haemovigilance_system": "ARCBS (Australian Red Cross Blood Service) Haemovigilance Program",
+    "hospital_reporting_obligation": "Hospitals are required to report all serious adverse transfusion reactions to Lifeblood and the TGA under the Therapeutic Goods Act 1989.",
+    "donor_adverse_event_report_line": "1800 812 189",
+    "annual_haemovigilance_report": "Published annually on the Lifeblood website; data contributed to ISBT international haemovigilance registry."
+  }
+}

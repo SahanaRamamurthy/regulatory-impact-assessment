@@ -1,0 +1,11 @@
+Therapeutic Goods Act 1989 (Cth) — Regulatory Reference
+
+Source: Therapeutic Goods Act 1989 (Cth)
+Jurisdiction: Commonwealth of Australia
+
+---
+
+Section: Section 9D
+Title: Quality and Safety Standards for Blood Products
+
+Blood and blood components supplied in Australia must comply with the standards set out in the Therapeutic Goods (Standard for Blood and Blood Components) Order. Manufacturing and processing of blood products must be performed in accordance with Good Manufacturing Practice (GMP) guidelines. All blood products must be tested for infectious disease markers including HIV, Hepatitis B, Hepatitis C, HTLV, and syphilis before release. Traceability must be maintained from donor to recipient for all blood products. Any adverse events related to blood product quality must be reported to the Therapeutic Goods Administration (TGA) within 7 days of discovery.
