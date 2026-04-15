@@ -1,6 +1,6 @@
 # Regulatory Impact Assessment Assistant
 
-An AI-powered compliance analysis system built with a Retrieval-Augmented Generation (RAG) pipeline. Analysts can upload regulatory documents in any format and query them to receive structured compliance verdicts with evidence-backed citations.
+An AI-powered compliance analysis system built with a Retrieval-Augmented Generation (RAG) pipeline. Anybody can upload regulatory documents in any format and query them to receive structured compliance verdicts with evidence-backed citations.
 
 ---
 
