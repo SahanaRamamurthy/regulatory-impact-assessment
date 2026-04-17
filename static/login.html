@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — Regulatory Impact Assessment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/RAG-nobackground.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0f2044;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Split layout ── */
+    .layout {
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    /* ── Left brand panel ── */
+    .brand-panel {
+      flex: 1;
+      background: linear-gradient(160deg, #0f2044 0%, #1a3260 60%, #7f1d1d 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .brand-panel::before {
+      content: '';
+      position: absolute;
+      top: -120px; right: -120px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.03);
+    }
+    .brand-panel::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -80px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.03);
+    }
+    .brand-logo {
+      width: 48px; height: 48px;
+      background: #b91c1c;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .brand-logo svg { width: 26px; height: 26px; fill: none; stroke: white; stroke-width: 1.8; }
+    .brand-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+    }
+    .brand-heading {
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      line-height: 1.25;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+    .brand-desc {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      max-width: 380px;
+      margin-bottom: 2.5rem;
+    }
+    .brand-features { display: flex; flex-direction: column; gap: 0.75rem; }
+    .feature-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.83rem;
+      color: rgba(255,255,255,0.6);
+    }
+    .feature-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #b91c1c;
+      flex-shrink: 0;
+    }
+    @media (max-width: 768px) { .brand-panel { display: none; } }
+
+    /* ── Right form panel ── */
+    .form-panel {
+      width: 440px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 2.5rem;
+    }
+    @media (max-width: 768px) { .form-panel { width: 100%; } }
+
+    .form-header { margin-bottom: 2rem; }
+    .form-header h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0f2044;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+    .form-header p { font-size: 0.845rem; color: #64748b; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 1.75rem;
+    }
+    .tab {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 0.845rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.15s;
+    }
+    .tab.active {
+      background: white;
+      color: #0f2044;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.01em;
+    }
+    .field input {
+      width: 100%;
+      padding: 0.65rem 0.875rem;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      color: #111827;
+      background: white;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field input:focus {
+      outline: none;
+      border-color: #1a3260;
+      box-shadow: 0 0 0 3px rgba(26,50,96,0.1);
+    }
+    .field input::placeholder { color: #9ca3af; }
+
+    /* ── Submit ── */
+    .btn-submit {
+      width: 100%;
+      padding: 0.7rem;
+      background: #0f2044;
+      color: white;
+      border: none;
+      border-radius: 7px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: -0.01em;
+    }
+    .btn-submit:hover   { background: #1a3260; }
+    .btn-submit:active  { transform: scale(0.99); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Messages ── */
+    .msg {
+      padding: 0.65rem 0.875rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .msg.error   { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
+    .msg.success { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+      color: #9ca3af;
+      font-size: 0.75rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .footer-note {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- Brand panel -->
+  <div class="brand-panel">
+    <img src="/static/RAG-nobackground.png" alt="Logo" style="height:72px;width:72px;object-fit:contain;margin-bottom:1.5rem;" />
+    <div class="brand-name">Australian Red Cross Lifeblood</div>
+    <h1 class="brand-heading">Regulatory Impact<br>Assessment Assistant</h1>
+    <p class="brand-desc">
+      AI-powered compliance analysis for healthcare governance teams.
+      Upload regulatory documents, query policies, and receive
+      evidence-backed verdicts in seconds.
+    </p>
+    <div class="brand-features">
+      <div class="feature-row"><div class="feature-dot"></div>RAG pipeline with TF-IDF retrieval</div>
+      <div class="feature-row"><div class="feature-dot"></div>Claude AI compliance verdicts with citations</div>
+      <div class="feature-row"><div class="feature-dot"></div>Multi-format document support (PDF, DOCX, XLSX, PPTX)</div>
+      <div class="feature-row"><div class="feature-dot"></div>Full activity log exported to Excel</div>
+    </div>
+  </div>
+
+  <!-- Form panel -->
+  <div class="form-panel">
+    <div class="form-header">
+      <h2 id="formTitle">Welcome back</h2>
+      <p id="formSubtitle">Sign in to your account to continue</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tabLogin" onclick="showTab('login')">Sign In</button>
+      <button class="tab" id="tabSignup" onclick="showTab('signup')">Create Account</button>
+    </div>
+
+    <div class="msg" id="msgBox"></div>
+
+    <!-- Login form -->
+    <div id="loginForm">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="Enter your username" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password"
+               onkeydown="if(event.key==='Enter') doLogin()" />
+      </div>
+      <button class="btn-submit" id="loginBtn" onclick="doLogin()">Sign In</button>
+    </div>
+
+    <!-- Signup form -->
+    <div id="signupForm" style="display:none;">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="Choose a username" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="regEmail" placeholder="your@email.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Create a password (min 6 chars)" autocomplete="new-password"
+               onkeydown="if(event.key==='Enter') doRegister()" />
+      </div>
+      <button class="btn-submit" id="registerBtn" onclick="doRegister()">Create Account</button>
+    </div>
+
+    <div class="footer-note">
+      By signing in you agree to the data governance policies<br>of Australian Red Cross Lifeblood.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Redirect if already logged in
+  if (localStorage.getItem('ria_token')) {
+    window.location.href = localStorage.getItem('ria_role') === 'admin' ? '/admin' : '/app';
+  }
+
+  function showTab(tab) {
+    const isLogin = tab === 'login';
+    document.getElementById('loginForm').style.display  = isLogin ? 'block' : 'none';
+    document.getElementById('signupForm').style.display = isLogin ? 'none'  : 'block';
+    document.getElementById('tabLogin').classList.toggle('active',  isLogin);
+    document.getElementById('tabSignup').classList.toggle('active', !isLogin);
+    document.getElementById('formTitle').textContent    = isLogin ? 'Welcome back' : 'Create an account';
+    document.getElementById('formSubtitle').textContent = isLogin
+      ? 'Sign in to your account to continue'
+      : 'Fill in your details to get started';
+    clearMsg();
+  }
+
+  function showMsg(text, type) {
+    const el = document.getElementById('msgBox');
+    el.textContent  = text;
+    el.className    = 'msg ' + type;
+    el.style.display = 'block';
+  }
+  function clearMsg() {
+    document.getElementById('msgBox').style.display = 'none';
+  }
+
+  async function doLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    if (!username || !password) { showMsg('Please enter username and password.', 'error'); return; }
+
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true; btn.textContent = 'Signing in...';
+    clearMsg();
+
+    try {
+      const r = await fetch('/api/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await r.json();
+      if (!r.ok) { showMsg(data.detail || 'Login failed.', 'error'); return; }
+      localStorage.setItem('ria_token',    data.token);
+      localStorage.setItem('ria_username', data.username);
+      localStorage.setItem('ria_role',     data.role);
+      window.location.href = data.role === 'admin' ? '/admin' : '/app';
+    } catch (e) {
+      showMsg('Server error. Is the server running?', 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  }
+
+  async function doRegister() {
+    const username = document.getElementById('regUsername').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+
+    if (!username || !email || !password) { showMsg('All fields are required.', 'error'); return; }
+    if (password.length < 6) { showMsg('Password must be at least 6 characters.', 'error'); return; }
+
+    const btn = document.getElementById('registerBtn');
+    btn.disabled = true; btn.textContent = 'Creating account...';
+    clearMsg();
+
+    try {
+      const r = await fetch('/api/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ username, email, password }),
+      });
+      const data = await r.json();
+      if (!r.ok) { showMsg(data.detail || 'Registration failed.', 'error'); return; }
+      showMsg('Account created! Signing you in...', 'success');
+      // Auto login
+      setTimeout(async () => {
+        const lr = await fetch('/api/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ username, password }),
+        });
+        const ld = await lr.json();
+        if (lr.ok) {
+          localStorage.setItem('ria_token',    ld.token);
+          localStorage.setItem('ria_username', ld.username);
+          localStorage.setItem('ria_role',     ld.role);
+          window.location.href = ld.role === 'admin' ? '/admin' : '/app';
+        }
+      }, 800);
+    } catch (e) {
+      showMsg('Server error. Is the server running?', 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create Account';
+    }
+  }
+</script>
+
+</body>
+</html>

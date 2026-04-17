@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Regulatory Impact Assessment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/RAG-nobackground.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0f2044; --navy-mid: #1a3260; --red: #b91c1c;
+      --grey-50: #f8fafc; --grey-100: #f1f5f9; --grey-200: #e2e8f0;
+      --grey-400: #94a3b8; --grey-600: #475569; --grey-800: #1e293b;
+      --white: #ffffff;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--grey-100); color: var(--grey-800); font-size: 14px; }
+
+    nav {
+      background: var(--navy); height: 56px;
+      display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { width: 28px; height: 28px; background: var(--red); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo svg { width: 15px; height: 15px; stroke: white; fill: none; stroke-width: 2; }
+    .nav-title { font-size: 0.875rem; font-weight: 600; color: white; }
+    .nav-badge { font-size: 0.65rem; font-weight: 700; background: var(--red); color: white; padding: 0.15rem 0.45rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+    .nav-user  { font-size: 0.78rem; color: rgba(255,255,255,0.55); }
+    .nav-username { color: white; font-weight: 600; }
+    .btn-nav { padding: 0.35rem 0.75rem; border-radius: 5px; font-size: 0.75rem; font-weight: 600; font-family: inherit; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: rgba(255,255,255,0.7); transition: all 0.15s; }
+    .btn-nav:hover { background: rgba(255,255,255,0.08); color: white; }
+
+    .page { max-width: 1300px; margin: 0 auto; padding: 1.5rem; }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 800px) { .stats-row { grid-template-columns: repeat(2,1fr); } }
+    .stat-card { background: white; border: 1px solid var(--grey-200); border-radius: 10px; padding: 1.1rem 1.25rem; }
+    .stat-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey-400); margin-bottom: 0.4rem; }
+    .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--grey-800); }
+    .stat-sub   { font-size: 0.73rem; color: var(--grey-400); margin-top: 0.2rem; }
+
+    /* Panels */
+    .panel { background: white; border: 1px solid var(--grey-200); border-radius: 10px; overflow: hidden; margin-bottom: 1.25rem; }
+    .panel-header { padding: 0.8rem 1.25rem; border-bottom: 1px solid var(--grey-200); background: var(--grey-50); display: flex; align-items: center; justify-content: space-between; }
+    .panel-title  { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey-600); }
+    .panel-body   { padding: 1.25rem; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.875rem; border: none; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-primary { background: var(--navy); color: white; }
+    .btn-primary:hover { background: var(--navy-mid); }
+    .btn-outline { background: white; color: var(--grey-600); border: 1px solid var(--grey-200); }
+    .btn-outline:hover { background: var(--grey-50); }
+    .btn-ghost { background: transparent; color: var(--grey-600); padding: 0.3rem 0.6rem; font-size: 0.72rem; }
+    .btn-ghost:hover { background: var(--grey-100); }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th { text-align: left; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--grey-400); padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--grey-200); background: var(--grey-50); }
+    td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--grey-100); color: var(--grey-800); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--grey-50); }
+
+    .role-badge { font-size: 0.62rem; font-weight: 700; padding: 0.12rem 0.35rem; border-radius: 3px; text-transform: uppercase; }
+    .role-admin { background: #fef3c7; color: #92400e; }
+    .role-user  { background: var(--grey-100); color: var(--grey-600); }
+
+    .act-badge { font-size: 0.62rem; font-weight: 700; padding: 0.1rem 0.35rem; border-radius: 3px; text-transform: uppercase; }
+    .act-ASSESS   { background: #dbeafe; color: #1e40af; }
+    .act-RETRIEVE { background: #f3e8ff; color: #6b21a8; }
+    .act-UPLOAD   { background: #dcfce7; color: #166534; }
+    .act-LOGIN    { background: var(--grey-100); color: var(--grey-600); }
+    .act-LOGOUT   { background: var(--grey-100); color: var(--grey-600); }
+    .act-REGISTER { background: #fef3c7; color: #92400e; }
+    .act-DELETE_DOC { background: #fee2e2; color: #991b1b; }
+
+    .verdict-tag { font-size: 0.62rem; font-weight: 700; padding: 0.12rem 0.35rem; border-radius: 3px; }
+    .v-COMPLIANT           { background: #dcfce7; color: #166534; }
+    .v-NON-COMPLIANT       { background: #fee2e2; color: #991b1b; }
+    .v-PARTIALLY-COMPLIANT { background: #fef3c7; color: #92400e; }
+    .v-NEEDS-REVIEW        { background: #dbeafe; color: #1e40af; }
+
+    .query-cell { max-width: 300px; color: var(--grey-600); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .empty-state { text-align: center; color: var(--grey-400); font-size: 0.82rem; padding: 2rem 0; }
+
+    /* Search */
+    .search-input { border: 1px solid var(--grey-200); border-radius: 6px; padding: 0.4rem 0.75rem; font-size: 0.8rem; font-family: inherit; color: var(--grey-800); }
+    .search-input:focus { outline: none; border-color: var(--navy-mid); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <img src="/static/RAG-nobackground.png" alt="Logo" style="height:38px;width:38px;object-fit:contain;flex-shrink:0;" />
+  <span class="nav-title">Admin Dashboard</span>
+  <span class="nav-badge">Super Admin</span>
+  <div class="nav-right">
+    <button class="btn-nav" onclick="exportFile('users')">Export Users</button>
+    <button class="btn-nav" onclick="exportFile('activity')">Export Activity</button>
+    <span class="nav-user">Signed in as <span class="nav-username" id="navUsername"></span></span>
+    <button class="btn-nav" onclick="doLogout()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Users</div>
+      <div class="stat-value" id="statUsers">—</div>
+      <div class="stat-sub">registered accounts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Queries</div>
+      <div class="stat-value" id="statQueries">—</div>
+      <div class="stat-sub">compliance assessments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Documents Uploaded</div>
+      <div class="stat-value" id="statUploads">—</div>
+      <div class="stat-sub">files indexed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Activity</div>
+      <div class="stat-value" id="statActivity">—</div>
+      <div class="stat-sub">logged actions</div>
+    </div>
+  </div>
+
+  <!-- Users + Activity -->
+  <div class="two-col">
+
+    <!-- Users table -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Registered Users</span>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <input class="search-input" id="userSearch" placeholder="Search..." oninput="filterUsers()" />
+          <button class="btn-ghost" onclick="loadAll()">Refresh</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th>Last Login</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable"><tr><td colspan="5" class="empty-state">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Activity table -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Activity Log</span>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <input class="search-input" id="actSearch" placeholder="Search..." oninput="filterActivity()" />
+          <button class="btn-ghost" onclick="loadAll()">Refresh</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Query / Document</th>
+              <th>Verdict</th>
+            </tr>
+          </thead>
+          <tbody id="activityTable"><tr><td colspan="5" class="empty-state">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const token    = localStorage.getItem('ria_token');
+  const role     = localStorage.getItem('ria_role');
+  const username = localStorage.getItem('ria_username');
+
+  if (!token || role !== 'admin') window.location.href = '/';
+  document.getElementById('navUsername').textContent = username || '';
+
+  function authHeaders() {
+    return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+  }
+
+  async function doLogout() {
+    await fetch('/api/logout', { method: 'POST', headers: authHeaders() });
+    localStorage.clear();
+    window.location.href = '/';
+  }
+
+  async function exportFile(type) {
+    const r = await fetch(`/api/export/${type}`, { headers: authHeaders() });
+    if (!r.ok) { alert('Export failed'); return; }
+    const blob = await r.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = type + '.xlsx';
+    a.click();
+  }
+
+  let _users    = [];
+  let _activity = [];
+
+  async function loadAll() {
+    const [ur, ar] = await Promise.all([
+      fetch('/api/admin/all-users',    { headers: authHeaders() }),
+      fetch('/api/admin/all-activity', { headers: authHeaders() }),
+    ]);
+    const ud = await ur.json();
+    const ad = await ar.json();
+    _users    = ud.users    || [];
+    _activity = ad.activity || [];
+
+    // Stats
+    document.getElementById('statUsers').textContent    = _users.length;
+    document.getElementById('statActivity').textContent = _activity.length;
+    document.getElementById('statQueries').textContent  = _activity.filter(a => a.action === 'ASSESS').length;
+    document.getElementById('statUploads').textContent  = _activity.filter(a => a.action === 'UPLOAD').length;
+
+    renderUsers(_users);
+    renderActivity(_activity);
+  }
+
+  function renderUsers(rows) {
+    const tb = document.getElementById('usersTable');
+    if (!rows.length) { tb.innerHTML = `<tr><td colspan="5" class="empty-state">No users found.</td></tr>`; return; }
+    tb.innerHTML = rows.map(u => `
+      <tr>
+        <td style="font-weight:600;">${u.username}</td>
+        <td style="color:var(--grey-600);">${u.email}</td>
+        <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+        <td style="color:var(--grey-400);font-size:0.73rem;">${u.created_at}</td>
+        <td style="color:var(--grey-400);font-size:0.73rem;">${u.last_login || '—'}</td>
+      </tr>`).join('');
+  }
+
+  function renderActivity(rows) {
+    const tb = document.getElementById('activityTable');
+    if (!rows.length) { tb.innerHTML = `<tr><td colspan="5" class="empty-state">No activity yet.</td></tr>`; return; }
+    tb.innerHTML = rows.slice(0, 200).map(a => {
+      const vc = (a.verdict || '').replace(/\s+/g, '-');
+      return `<tr>
+        <td style="font-size:0.72rem;color:var(--grey-400);white-space:nowrap;">${a.timestamp}</td>
+        <td style="font-weight:500;">${a.username}</td>
+        <td><span class="act-badge act-${a.action}">${a.action}</span></td>
+        <td class="query-cell">${a.query || a.document || a.details || '—'}</td>
+        <td>${a.verdict ? `<span class="verdict-tag v-${vc}">${a.verdict}</span>` : '—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function filterUsers() {
+    const q = document.getElementById('userSearch').value.toLowerCase();
+    renderUsers(_users.filter(u => u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)));
+  }
+
+  function filterActivity() {
+    const q = document.getElementById('actSearch').value.toLowerCase();
+    renderActivity(_activity.filter(a =>
+      a.username.toLowerCase().includes(q) ||
+      a.action.toLowerCase().includes(q) ||
+      (a.query || '').toLowerCase().includes(q) ||
+      (a.document || '').toLowerCase().includes(q)
+    ));
+  }
+
+  loadAll();
+</script>
+</body>
+</html>
