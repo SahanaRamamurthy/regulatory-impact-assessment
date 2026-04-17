@@ -4,468 +4,669 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Regulatory Impact Assessment Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="icon" type="image/png" href="/static/RAG-nobackground.png" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #f0f4f8;
-      color: #1a2332;
-      min-height: 100vh;
+    :root {
+      --navy:       #0f2044;
+      --navy-mid:   #1a3260;
+      --red:        #b91c1c;
+      --red-light:  #fee2e2;
+      --red-dark:   #7f1d1d;
+      --green:      #15803d;
+      --green-light:#dcfce7;
+      --amber:      #b45309;
+      --amber-light:#fef3c7;
+      --blue:       #1d4ed8;
+      --blue-light: #dbeafe;
+      --grey-50:    #f8fafc;
+      --grey-100:   #f1f5f9;
+      --grey-200:   #e2e8f0;
+      --grey-400:   #94a3b8;
+      --grey-600:   #475569;
+      --grey-800:   #1e293b;
+      --white:      #ffffff;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
     }
 
-    /* ── Header ── */
-    header {
-      background: linear-gradient(135deg, #1a2e4a 0%, #c0392b 100%);
-      color: white;
-      padding: 1.5rem 2rem;
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--grey-100);
+      color: var(--grey-800);
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      background: var(--navy);
+      height: 56px;
       display: flex;
       align-items: center;
+      padding: 0 1.5rem;
       gap: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    header .logo { font-size: 2rem; }
-    header h1 { font-size: 1.4rem; font-weight: 700; }
-    header p  { font-size: 0.85rem; opacity: 0.85; margin-top: 2px; }
+    .nav-logo {
+      width: 28px; height: 28px;
+      background: var(--red);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-logo svg { width: 15px; height: 15px; stroke: white; fill: none; stroke-width: 2; }
+    .nav-title { font-size: 0.875rem; font-weight: 600; color: white; letter-spacing: -0.01em; }
+    .nav-sub   { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+    .nav-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.1); margin: 0 0.25rem; }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+    .nav-user  { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+    .nav-username { color: white; font-weight: 600; }
+
+    .btn-nav {
+      padding: 0.35rem 0.75rem;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      transition: all 0.15s;
+    }
+    .btn-nav:hover { background: rgba(255,255,255,0.08); color: white; }
+    .btn-nav.export { border-color: rgba(255,255,255,0.25); }
 
     /* ── Layout ── */
-    .container {
-      max-width: 1300px;
+    .workspace {
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 2rem 1.5rem;
-      display: grid;
-      grid-template-columns: 1fr 360px;
-      gap: 1.5rem;
-    }
-    @media (max-width: 960px) { .container { grid-template-columns: 1fr; } }
-
-    /* ── Cards ── */
-    .card {
-      background: white;
-      border-radius: 12px;
       padding: 1.5rem;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.25rem;
     }
-    .card h2 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #1a2e4a;
-      margin-bottom: 1rem;
+    @media (max-width: 1024px) { .workspace { grid-template-columns: 1fr; } }
+
+    /* ── Panel ── */
+    .panel {
+      background: var(--white);
+      border-radius: 10px;
+      border: 1px solid var(--grey-200);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .panel:last-child { margin-bottom: 0; }
+    .panel-header {
+      padding: 0.8rem 1.25rem;
+      border-bottom: 1px solid var(--grey-200);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      justify-content: space-between;
+      background: var(--grey-50);
     }
+    .panel-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--grey-600);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .panel-body { padding: 1.25rem; }
 
     /* ── Query ── */
-    .query-area {
+    .query-input {
       width: 100%;
-      min-height: 120px;
-      border: 1.5px solid #d1dce8;
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      font-size: 0.95rem;
+      min-height: 96px;
+      border: 1px solid var(--grey-200);
+      border-radius: 7px;
+      padding: 0.8rem 1rem;
+      font-size: 0.875rem;
       font-family: inherit;
       resize: vertical;
-      transition: border-color 0.2s;
+      color: var(--grey-800);
+      background: var(--grey-50);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      line-height: 1.6;
     }
-    .query-area:focus { outline: none; border-color: #c0392b; }
+    .query-input::placeholder { color: var(--grey-400); }
+    .query-input:focus {
+      outline: none;
+      border-color: var(--navy-mid);
+      box-shadow: 0 0 0 3px rgba(26,50,96,0.08);
+      background: var(--white);
+    }
 
-    .controls {
+    .query-actions {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      margin-top: 0.75rem;
+      gap: 0.6rem;
+      margin-top: 0.8rem;
       flex-wrap: wrap;
     }
-    .controls label { font-size: 0.85rem; color: #556; }
-    .controls select {
-      padding: 0.4rem 0.6rem;
-      border: 1.5px solid #d1dce8;
-      border-radius: 6px;
-      font-size: 0.85rem;
-    }
 
+    /* ── Buttons ── */
     .btn {
-      padding: 0.55rem 1.2rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.48rem 0.9rem;
+      border: none; border-radius: 6px;
+      font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s, transform 0.1s;
     }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary   { background: #c0392b; color: white; }
-    .btn-secondary { background: #e8eef5; color: #1a2e4a; }
-    .btn-danger    { background: #fdecea; color: #b71c1c; font-size: 0.78rem; padding: 0.3rem 0.65rem; }
-    .btn:disabled  { opacity: 0.45; cursor: not-allowed; }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* ── Example pills ── */
-    .examples { margin-top: 1rem; }
-    .examples p { font-size: 0.8rem; color: #778; margin-bottom: 0.5rem; }
-    .example-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .pill {
-      background: #f0f4f8;
-      border: 1px solid #d1dce8;
-      border-radius: 20px;
-      padding: 0.3rem 0.75rem;
-      font-size: 0.78rem;
-      color: #1a2e4a;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .pill:hover { background: #ddeaff; }
+    .btn-primary  { background: var(--navy); color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+    .btn-primary:hover:not(:disabled) { background: var(--navy-mid); }
+    .btn-outline  { background: white; color: var(--grey-600); border: 1px solid var(--grey-200); }
+    .btn-outline:hover:not(:disabled) { background: var(--grey-50); }
+    .btn-ghost    { background: transparent; color: var(--grey-600); padding: 0.3rem 0.6rem; font-size: 0.72rem; }
+    .btn-ghost:hover { background: var(--grey-100); }
+    .btn-remove   { background: transparent; color: var(--grey-400); border: 1px solid var(--grey-200); padding: 0.2rem 0.45rem; font-size: 0.7rem; border-radius: 4px; }
+    .btn-remove:hover { background: var(--red-light); color: var(--red); }
 
-    /* ── Upload zone ── */
-    .upload-zone {
-      border: 2px dashed #b0c4de;
-      border-radius: 10px;
-      padding: 1.5rem;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      color: #556;
-      font-size: 0.88rem;
+    .btn-mic {
+      background: white; border: 1px solid var(--grey-200);
+      border-radius: 6px; padding: 0.48rem 0.7rem;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.78rem; font-weight: 600; font-family: inherit;
+      color: var(--grey-600); transition: all 0.15s;
     }
-    .upload-zone:hover, .upload-zone.drag-over {
-      border-color: #c0392b;
-      background: #fff5f5;
+    .btn-mic:hover { border-color: var(--navy-mid); color: var(--navy); }
+    .btn-mic.listening {
+      background: #fee2e2; border-color: var(--red); color: var(--red);
+      animation: pulse 1.2s ease-in-out infinite;
     }
-    .upload-zone .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-    .upload-zone p { margin: 0.2rem 0; }
-    .upload-zone .formats { font-size: 0.75rem; color: #99a; margin-top: 0.4rem; }
-    #fileInput { display: none; }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(185,28,28,0.3); } 50% { box-shadow: 0 0 0 5px rgba(185,28,28,0); } }
+    .btn-mic svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    .upload-progress {
-      margin-top: 0.75rem;
-      display: none;
+    .clause-select {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.78rem; color: var(--grey-600); margin-left: auto;
     }
-    .progress-bar-wrap {
-      background: #e8eef5;
-      border-radius: 6px;
-      height: 6px;
-      overflow: hidden;
+    .clause-select select {
+      border: 1px solid var(--grey-200); border-radius: 5px;
+      padding: 0.28rem 0.45rem; font-size: 0.78rem;
+      font-family: inherit; color: var(--grey-800); background: white;
     }
-    .progress-bar {
-      height: 100%;
-      background: #c0392b;
-      width: 0%;
-      transition: width 0.3s;
-      border-radius: 6px;
-    }
-    .upload-status { font-size: 0.82rem; color: #556; margin-top: 0.4rem; }
 
-    /* ── File list ── */
-    .file-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f0f4f8;
-      font-size: 0.83rem;
-      gap: 0.5rem;
+    /* ── Sample queries ── */
+    .examples-section { margin-top: 0.875rem; padding-top: 0.875rem; border-top: 1px solid var(--grey-100); }
+    .examples-label { font-size: 0.68rem; font-weight: 700; color: var(--grey-400); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+    .chip-wrap { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .chip {
+      background: var(--grey-50); border: 1px solid var(--grey-200);
+      border-radius: 4px; padding: 0.28rem 0.6rem;
+      font-size: 0.74rem; color: var(--grey-600);
+      cursor: pointer; transition: all 0.12s; font-family: inherit;
     }
-    .file-item:last-child { border-bottom: none; }
-    .file-item .file-name { flex: 1; font-weight: 600; word-break: break-all; }
-    .file-item .file-chunks { color: #888; font-size: 0.75rem; white-space: nowrap; }
-    .file-ext {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 0.15rem 0.4rem;
-      border-radius: 4px;
-      background: #e8eef5;
-      color: #1a2e4a;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .empty-state { color: #aaa; font-size: 0.85rem; text-align: center; padding: 1rem 0; }
+    .chip:hover { background: var(--blue-light); border-color: #93c5fd; color: var(--blue); }
 
-    /* ── Results ── */
-    #results { margin-top: 1.5rem; }
+    /* ── Verdict ── */
+    .verdict-panel { border-radius: 8px; overflow: hidden; border: 1px solid var(--grey-200); margin-top: 1.25rem; }
+    .verdict-header { padding: 1rem 1.25rem; display: flex; align-items: flex-start; gap: 0.875rem; }
+    .verdict-indicator { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+    .verdict-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.2rem; }
+    .verdict-summary { font-size: 0.86rem; line-height: 1.6; }
+    .verdict-badges { display: flex; gap: 0.4rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .vbadge { font-size: 0.66rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
 
-    .verdict-banner {
-      border-radius: 10px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-    .verdict-banner .icon { font-size: 2rem; flex-shrink: 0; }
-    .verdict-banner h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .verdict-banner p  { font-size: 0.9rem; line-height: 1.5; }
+    .v-COMPLIANT .verdict-header           { background: #f0fdf4; }
+    .v-COMPLIANT .verdict-indicator        { background: #16a34a; }
+    .v-COMPLIANT .verdict-label            { color: var(--green); }
+    .v-COMPLIANT .verdict-summary          { color: #166534; }
+    .v-NON-COMPLIANT .verdict-header       { background: #fff1f2; }
+    .v-NON-COMPLIANT .verdict-indicator    { background: var(--red); }
+    .v-NON-COMPLIANT .verdict-label        { color: var(--red); }
+    .v-NON-COMPLIANT .verdict-summary      { color: var(--red-dark); }
+    .v-PARTIALLY-COMPLIANT .verdict-header { background: #fffbeb; }
+    .v-PARTIALLY-COMPLIANT .verdict-indicator { background: #d97706; }
+    .v-PARTIALLY-COMPLIANT .verdict-label  { color: var(--amber); }
+    .v-PARTIALLY-COMPLIANT .verdict-summary { color: #78350f; }
+    .v-NEEDS-REVIEW .verdict-header        { background: #eff6ff; }
+    .v-NEEDS-REVIEW .verdict-indicator     { background: var(--blue); }
+    .v-NEEDS-REVIEW .verdict-label         { color: var(--blue); }
+    .v-NEEDS-REVIEW .verdict-summary       { color: #1e3a8a; }
+    .v-INSUFFICIENT-DATA .verdict-header   { background: var(--grey-100); }
+    .v-INSUFFICIENT-DATA .verdict-indicator { background: var(--grey-400); }
+    .v-INSUFFICIENT-DATA .verdict-label    { color: var(--grey-600); }
+    .v-INSUFFICIENT-DATA .verdict-summary  { color: var(--grey-600); }
 
-    .COMPLIANT           { background: #e8f5e9; color: #1b5e20; }
-    .NON-COMPLIANT       { background: #fdecea; color: #7f1d1d; }
-    .PARTIALLY-COMPLIANT { background: #fff8e1; color: #4e2900; }
-    .NEEDS-REVIEW        { background: #e8eaf6; color: #1a237e; }
-    .INSUFFICIENT-DATA   { background: #f5f5f5; color: #424242; }
+    .badge-risk-HIGH   { background:#fee2e2; color:#991b1b; }
+    .badge-risk-MEDIUM { background:#fef3c7; color:#92400e; }
+    .badge-risk-LOW    { background:#dcfce7; color:#166534; }
+    .badge-conf-HIGH   { background:#dbeafe; color:#1e40af; }
+    .badge-conf-MEDIUM { background:#f5f3ff; color:#5b21b6; }
+    .badge-conf-LOW    { background:var(--grey-100); color:var(--grey-600); }
 
-    .badges { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
-    .badge {
-      border-radius: 4px;
-      padding: 0.2rem 0.55rem;
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-    .badge-risk-HIGH   { background: #fdecea; color: #b71c1c; }
-    .badge-risk-MEDIUM { background: #fff8e1; color: #e65100; }
-    .badge-risk-LOW    { background: #e8f5e9; color: #2e7d32; }
-    .badge-conf-HIGH   { background: #e3f2fd; color: #0d47a1; }
-    .badge-conf-MEDIUM { background: #f3e5f5; color: #4a148c; }
-    .badge-conf-LOW    { background: #f5f5f5; color: #424242; }
-
-    .section-title {
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #778;
-      margin: 1.25rem 0 0.6rem;
-    }
+    .verdict-body { padding: 1.25rem; background: white; }
+    .section-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--grey-400); margin-bottom: 0.5rem; margin-top: 1rem; }
+    .section-label:first-child { margin-top: 0; }
 
     .findings-list { list-style: none; }
-    .findings-list li {
-      padding: 0.45rem 0;
-      border-bottom: 1px solid #f0f4f8;
-      font-size: 0.88rem;
-      display: flex;
-      gap: 0.5rem;
-    }
-    .findings-list li::before { content: "→"; color: #c0392b; flex-shrink: 0; }
+    .findings-list li { padding: 0.45rem 0; border-bottom: 1px solid var(--grey-100); font-size: 0.835rem; color: var(--grey-800); display: flex; gap: 0.6rem; line-height: 1.5; }
+    .findings-list li:last-child { border-bottom: none; }
+    .finding-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--grey-400); margin-top: 0.5rem; flex-shrink: 0; }
 
-    .citation-card {
-      border: 1px solid #d1dce8;
-      border-radius: 8px;
-      padding: 0.7rem 1rem;
-      margin-bottom: 0.5rem;
-    }
-    .citation-card .cite-header  { font-weight: 700; font-size: 0.87rem; color: #1a2e4a; }
-    .citation-card .cite-section { font-size: 0.77rem; color: #888; margin-bottom: 0.25rem; }
-    .citation-card .cite-relevance { font-size: 0.84rem; color: #444; }
+    .citation-row { padding: 0.7rem 1rem; border: 1px solid var(--grey-200); border-radius: 6px; margin-bottom: 0.4rem; background: var(--grey-50); }
+    .cite-top     { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.2rem; }
+    .cite-source  { font-size: 0.8rem; font-weight: 600; color: var(--grey-800); }
+    .cite-section { font-size: 0.7rem; color: var(--grey-400); }
+    .cite-relevance { font-size: 0.8rem; color: var(--grey-600); line-height: 1.5; }
 
-    .recommendation-box {
-      background: #f0f4f8;
-      border-left: 4px solid #c0392b;
-      border-radius: 0 8px 8px 0;
-      padding: 0.85rem 1rem;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
+    .rec-box { background: var(--grey-50); border: 1px solid var(--grey-200); border-left: 3px solid var(--navy); border-radius: 0 6px 6px 0; padding: 0.8rem 1rem; font-size: 0.835rem; color: var(--grey-800); line-height: 1.6; }
 
-    /* ── Retrieved clauses ── */
-    .clause-item { border: 1px solid #e4eaf2; border-radius: 8px; margin-bottom: 0.75rem; overflow: hidden; }
-    .clause-header {
-      background: #f7f9fc;
-      padding: 0.6rem 0.85rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      font-size: 0.84rem;
-      font-weight: 600;
-      color: #1a2e4a;
+    /* ── Clause cards ── */
+    .clause-item { border: 1px solid var(--grey-200); border-radius: 6px; margin-bottom: 0.45rem; overflow: hidden; }
+    .clause-hdr  { background: var(--grey-50); padding: 0.55rem 0.8rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 0.78rem; font-weight: 500; color: var(--grey-800); user-select: none; }
+    .clause-hdr:hover { background: var(--grey-100); }
+    .rel-wrap  { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
+    .rel-pct   { font-size: 0.68rem; font-weight: 600; color: var(--grey-600); white-space: nowrap; }
+    .rel-track { width: 36px; height: 3px; background: var(--grey-200); border-radius: 2px; overflow: hidden; }
+    .rel-fill  { height: 100%; background: var(--navy); border-radius: 2px; }
+    .clause-body { padding: 0.7rem 0.8rem; font-size: 0.78rem; color: var(--grey-600); line-height: 1.65; display: none; border-top: 1px solid var(--grey-200); }
+    .clause-meta { font-size: 0.68rem; color: var(--grey-400); margin-bottom: 0.3rem; }
+
+    /* ── Upload ── */
+    .upload-zone {
+      border: 1.5px dashed var(--grey-200); border-radius: 7px;
+      padding: 1.25rem; text-align: center; cursor: pointer;
+      transition: all 0.15s; color: var(--grey-600);
     }
-    .clause-header:hover { background: #edf2f9; }
-    .score-pill {
-      background: #ddeaff;
-      color: #1a2e4a;
-      border-radius: 12px;
-      padding: 0.15rem 0.5rem;
-      font-size: 0.72rem;
-      font-weight: 700;
-      white-space: nowrap;
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--navy-mid); background: #f0f4ff; }
+    .upload-icon { width: 36px; height: 36px; background: var(--grey-100); border-radius: 7px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.6rem; }
+    .upload-icon svg { width: 18px; height: 18px; stroke: var(--grey-400); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .upload-zone p { font-size: 0.8rem; }
+    .upload-zone strong { color: var(--navy); }
+    .upload-fmts { font-size: 0.68rem; color: var(--grey-400); margin-top: 0.3rem; }
+    #fileInput { display: none; }
+
+    .prog-wrap  { margin-top: 0.6rem; display: none; }
+    .prog-track { background: var(--grey-100); border-radius: 3px; height: 3px; overflow: hidden; }
+    .prog-fill  { height: 100%; background: var(--navy); width: 0%; transition: width 0.3s; }
+    .prog-label { font-size: 0.73rem; color: var(--grey-600); margin-top: 0.3rem; }
+
+    /* ── File rows ── */
+    .file-row { display: flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0; border-bottom: 1px solid var(--grey-100); font-size: 0.78rem; }
+    .file-row:last-child { border-bottom: none; }
+    .fext  { font-size: 0.6rem; font-weight: 700; padding: 0.12rem 0.3rem; border-radius: 3px; background: var(--grey-100); color: var(--grey-600); text-transform: uppercase; flex-shrink: 0; }
+    .fname { flex: 1; color: var(--grey-800); font-weight: 500; word-break: break-all; }
+    .fchunks { font-size: 0.68rem; color: var(--grey-400); white-space: nowrap; }
+    .idx-summary { font-size: 0.7rem; color: var(--grey-400); margin-bottom: 0.5rem; }
+    .empty-state { text-align: center; color: var(--grey-400); font-size: 0.8rem; padding: 1rem 0; }
+
+    /* ── Activity log ── */
+    .activity-row { padding: 0.5rem 0; border-bottom: 1px solid var(--grey-100); font-size: 0.78rem; }
+    .activity-row:last-child { border-bottom: none; }
+    .act-top { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.15rem; }
+    .act-badge {
+      font-size: 0.6rem; font-weight: 700; padding: 0.1rem 0.35rem;
+      border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em;
     }
-    .clause-body {
-      padding: 0.75rem 0.85rem;
-      font-size: 0.82rem;
-      color: #444;
-      line-height: 1.6;
-      display: none;
-      border-top: 1px solid #e4eaf2;
-    }
-    .clause-source { font-size: 0.74rem; color: #888; margin-bottom: 0.3rem; }
+    .act-ASSESS   { background: #dbeafe; color: #1e40af; }
+    .act-RETRIEVE { background: #f3e8ff; color: #6b21a8; }
+    .act-UPLOAD   { background: #dcfce7; color: #166534; }
+    .act-LOGIN    { background: var(--grey-100); color: var(--grey-600); }
+    .act-LOGOUT   { background: var(--grey-100); color: var(--grey-600); }
+    .act-REGISTER { background: #fef3c7; color: #92400e; }
+    .act-DELETE_DOC { background: var(--red-light); color: var(--red); }
+    .activity-clickable { cursor: pointer; border-radius: 6px; margin: 0 -0.5rem; padding-left: 0.5rem; padding-right: 0.5rem; transition: background 0.12s; }
+    .activity-clickable:hover { background: var(--blue-light); }
+    .act-time   { font-size: 0.68rem; color: var(--grey-400); margin-left: auto; }
+    .act-detail { font-size: 0.75rem; color: var(--grey-600); line-height: 1.4; }
 
     /* ── Sidebar ── */
-    .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+    .sidebar { display: flex; flex-direction: column; }
 
     /* ── Toast ── */
-    #toast {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: #1a2e4a;
-      color: white;
-      border-radius: 8px;
-      padding: 0.75rem 1.25rem;
-      font-size: 0.88rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: none;
-      z-index: 999;
-    }
-    #toast.success { background: #2e7d32; }
-    #toast.error   { background: #b71c1c; }
+    #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--grey-800); color: white; border-radius: 6px; padding: 0.6rem 1rem; font-size: 0.8rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: none; z-index: 999; }
+    #toast.success { background: #15803d; }
+    #toast.error   { background: var(--red); }
 
     /* ── Loader ── */
-    .loader {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      padding: 2rem;
-      color: #556;
-      font-size: 0.9rem;
-    }
-    .spinner {
-      width: 24px; height: 24px;
-      border: 3px solid #d1dce8;
-      border-top-color: #c0392b;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+    .loader { display: none; align-items: center; gap: 0.6rem; padding: 1.5rem; color: var(--grey-600); font-size: 0.835rem; }
+    .spinner { width: 16px; height: 16px; border: 2px solid var(--grey-200); border-top-color: var(--navy); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .error-box {
-      background: #fdecea;
-      color: #7f1d1d;
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      font-size: 0.9rem;
-      display: none;
-      margin-top: 1rem;
-    }
+    .error-msg { background: #fff1f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.835rem; color: var(--red-dark); display: none; margin-top: 1rem; }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">🏥</div>
+<nav>
+  <img src="/static/RAG-nobackground.png" alt="Logo" style="height:38px;width:38px;object-fit:contain;flex-shrink:0;" />
   <div>
-    <h1>Regulatory Impact Assessment Assistant</h1>
-    <p>AI-powered compliance analysis · RAG pipeline · TF-IDF + GPT · Multi-format document support</p>
+    <div class="nav-title">Regulatory Impact Assessment</div>
+    <div class="nav-sub">Australian Red Cross Lifeblood</div>
   </div>
-</header>
+  <div class="nav-divider"></div>
+  <div class="nav-right">
+    <span class="nav-user">Signed in as <span class="nav-username" id="navUsername"></span></span>
+    <button class="btn-nav" onclick="doLogout()">Sign Out</button>
+  </div>
+</nav>
 
 <div id="toast"></div>
 
-<div class="container">
+<div class="workspace">
 
-  <!-- ── Main Panel ── -->
+  <!-- ── Main ── -->
   <main>
 
-    <!-- Query Card -->
-    <div class="card">
-      <h2>🔍 Compliance Query</h2>
-      <textarea class="query-area" id="queryInput"
-        placeholder="Describe the activity, policy, or scenario you want to assess for compliance…
-
-Example: We want to share donor health records with a third-party analytics firm without explicit consent."></textarea>
-
-      <div class="controls">
-        <label>
-          Retrieve top
-          <select id="topK">
-            <option value="3">3</option>
-            <option value="4" selected>4</option>
-            <option value="6">6</option>
-          </select>
-          clauses
-        </label>
-        <button class="btn btn-primary" id="assessBtn" onclick="assess()">Assess Compliance</button>
-        <button class="btn btn-secondary" onclick="retrieveOnly()">Retrieve Only</button>
-      </div>
-
-      <div class="examples">
-        <p>Try an example:</p>
-        <div class="example-pills">
-          <span class="pill" onclick="setQuery(this)">Sharing donor health records with third parties without consent</span>
-          <span class="pill" onclick="setQuery(this)">Storing PHI without encryption on a cloud server</span>
-          <span class="pill" onclick="setQuery(this)">Deleting donor records after 5 years</span>
-          <span class="pill" onclick="setQuery(this)">Using blood donor data for direct marketing campaigns</span>
-          <span class="pill" onclick="setQuery(this)">Failure to notify of a data breach within 60 days</span>
-          <span class="pill" onclick="setQuery(this)">De-identifying patient records before research use</span>
+    <!-- Query -->
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Compliance Query</span></div>
+      <div class="panel-body">
+        <textarea class="query-input" id="queryInput"
+          placeholder="Describe the activity, policy, or scenario you want to assess. Be specific about the data involved, the parties, and the action being taken."></textarea>
+        <div class="query-actions">
+          <button class="btn btn-primary" id="assessBtn" onclick="assess()">
+            <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Assess Compliance
+          </button>
+          <button class="btn btn-outline" onclick="retrieveOnly()">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Retrieve Clauses Only
+          </button>
+          <button class="btn-mic" id="micBtn" onclick="toggleMic()" title="Click to speak your query">
+            <svg id="micIcon" viewBox="0 0 24 24">
+              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+              <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/>
+            </svg>
+            <span id="micLabel">Speak</span>
+          </button>
+          <div class="clause-select">
+            Top <select id="topK"><option value="3">3</option><option value="4" selected>4</option><option value="6">6</option></select> clauses
+          </div>
+        </div>
+        <div class="examples-section">
+          <div class="examples-label">Sample Queries</div>
+          <div class="chip-wrap">
+            <button class="chip" onclick="setQuery(this)">Sharing donor health records with third parties without consent</button>
+            <button class="chip" onclick="setQuery(this)">Storing PHI without encryption on a cloud server</button>
+            <button class="chip" onclick="setQuery(this)">Deleting donor records after 5 years</button>
+            <button class="chip" onclick="setQuery(this)">Using blood donor data for direct marketing campaigns</button>
+            <button class="chip" onclick="setQuery(this)">Failure to notify of a data breach within 60 days</button>
+            <button class="chip" onclick="setQuery(this)">De-identifying patient records before research use</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Loader -->
-    <div class="loader" id="loader">
-      <div class="spinner"></div>
-      <span>Retrieving relevant clauses and generating compliance verdict…</span>
-    </div>
-
-    <!-- Error -->
-    <div class="error-box" id="errorBox"></div>
-
-    <!-- Results -->
+    <div class="loader" id="loader"><div class="spinner"></div><span>Retrieving clauses and generating compliance assessment...</span></div>
+    <div class="error-msg" id="errorBox"></div>
     <div id="results"></div>
 
-    <!-- Retrieved Clauses (inline on mobile) -->
-    <div id="clausesPanelMobile" style="display:none; margin-top:1.5rem;">
-      <div class="card">
-        <h2>📄 Retrieved Clauses</h2>
-        <div id="clausesListMobile"></div>
+    <!-- Clauses mobile -->
+    <div id="clausesPanelMobile" style="display:none;">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Retrieved Clauses</span></div>
+        <div class="panel-body" id="clausesListMobile"></div>
       </div>
     </div>
+
+    <!-- Activity history -->
+    <div class="panel" id="activityPanel">
+      <div class="panel-header">
+        <span class="panel-title">My Activity</span>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-ghost" onclick="downloadMyActivity()">
+            <svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </button>
+          <button class="btn btn-ghost" onclick="loadActivity()">Refresh</button>
+        </div>
+      </div>
+      <div class="panel-body" id="activityList"><p class="empty-state">Loading...</p></div>
+    </div>
+
   </main>
 
   <!-- ── Sidebar ── -->
   <aside class="sidebar">
 
-    <!-- Upload Card -->
-    <div class="card">
-      <h2>📤 Upload Documents</h2>
-
-      <div class="upload-zone" id="uploadZone"
-           onclick="document.getElementById('fileInput').click()"
-           ondragover="onDragOver(event)"
-           ondragleave="onDragLeave(event)"
-           ondrop="onDrop(event)">
-        <div class="upload-icon">📁</div>
-        <p><strong>Click to browse</strong> or drag & drop files here</p>
-        <div class="formats">PDF · DOCX · XLSX · PPTX · CSV · TXT · MD · JSON</div>
-      </div>
-      <input type="file" id="fileInput" multiple
-             accept=".pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.csv,.txt,.md,.json"
-             onchange="uploadFiles(this.files)" />
-
-      <div class="upload-progress" id="uploadProgress">
-        <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
-        <div class="upload-status" id="uploadStatus">Uploading…</div>
+    <!-- Upload -->
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Upload Documents</span></div>
+      <div class="panel-body">
+        <div class="upload-zone" id="uploadZone"
+             onclick="document.getElementById('fileInput').click()"
+             ondragover="onDragOver(event)" ondragleave="onDragLeave()" ondrop="onDrop(event)">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          </div>
+          <p><strong>Click to browse</strong> or drag and drop</p>
+          <div class="upload-fmts">PDF · DOCX · XLSX · PPTX · CSV · TXT · JSON</div>
+        </div>
+        <input type="file" id="fileInput" multiple
+               accept=".pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.csv,.txt,.md,.json"
+               onchange="uploadFiles(this.files)" />
+        <div class="prog-wrap" id="uploadProgress">
+          <div class="prog-track"><div class="prog-fill" id="progressBar"></div></div>
+          <div class="prog-label" id="uploadStatus">Uploading...</div>
+        </div>
       </div>
     </div>
 
-    <!-- Retrieved Clauses (sidebar on desktop) -->
-    <div class="card" id="clausesPanelDesktop" style="display:none;">
-      <h2>📄 Retrieved Clauses</h2>
-      <div id="clausesListDesktop"></div>
+    <!-- Clauses desktop -->
+    <div class="panel" id="clausesPanelDesktop" style="display:none;">
+      <div class="panel-header"><span class="panel-title">Retrieved Clauses</span></div>
+      <div class="panel-body" id="clausesListDesktop"></div>
     </div>
 
-    <!-- Indexed Documents -->
-    <div class="card">
-      <h2>
-        📚 Indexed Documents
-        <button class="btn btn-secondary" style="margin-left:auto;font-size:0.75rem;padding:0.25rem 0.6rem;"
-                onclick="loadDocs()">↺ Refresh</button>
-      </h2>
-      <div id="docList"><p class="empty-state">Loading…</p></div>
+    <!-- Indexed docs -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Indexed Documents</span>
+        <button class="btn btn-ghost" onclick="loadDocs()">Refresh</button>
+      </div>
+      <div class="panel-body" id="docList"><p class="empty-state">Loading...</p></div>
     </div>
 
   </aside>
 </div>
 
 <script>
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // ── Speech recognition ────────────────────────────────────────────────────
+  let recognition = null;
+  let isListening = false;
 
-  function setQuery(el) {
-    document.getElementById('queryInput').value = el.textContent.trim();
+  function initSpeech() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return null;
+    const r = new SR();
+    r.continuous      = false;
+    r.interimResults  = true;
+    r.lang            = 'en-AU';
+
+    r.onstart = () => {
+      isListening = true;
+      document.getElementById('micBtn').classList.add('listening');
+      document.getElementById('micLabel').textContent = 'Listening...';
+    };
+
+    r.onresult = (e) => {
+      let transcript = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        transcript += e.results[i][0].transcript;
+      }
+      document.getElementById('queryInput').value = transcript;
+    };
+
+    r.onerror = (e) => {
+      if (e.error === 'not-allowed') {
+        alert('Microphone access denied. Please allow microphone in your browser settings.');
+      }
+      stopMic();
+    };
+
+    r.onend = () => stopMic();
+    return r;
   }
+
+  function toggleMic() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      alert('Your browser does not support speech recognition. Try Chrome or Edge.');
+      return;
+    }
+    if (isListening) {
+      if (recognition) recognition.stop();
+      stopMic();
+    } else {
+      recognition = initSpeech();
+      if (recognition) recognition.start();
+    }
+  }
+
+  function stopMic() {
+    isListening = false;
+    document.getElementById('micBtn').classList.remove('listening');
+    document.getElementById('micLabel').textContent = 'Speak';
+  }
+
+  // ── Auth guard ────────────────────────────────────────────────────────────
+  const token    = localStorage.getItem('ria_token');
+  const username = localStorage.getItem('ria_username');
+  if (!token) window.location.href = '/';
+  document.getElementById('navUsername').textContent = username || '';
+
+  function authHeaders() {
+    return {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token};
+  }
+  function authHeadersMultipart() {
+    return {'Authorization': 'Bearer ' + token};
+  }
+
+  async function doLogout() {
+    await fetch('/api/logout', { method: 'POST', headers: authHeaders() });
+    localStorage.removeItem('ria_token');
+    localStorage.removeItem('ria_username');
+    localStorage.removeItem('ria_role');
+    window.location.href = '/';
+  }
+
+  function downloadPDF() {
+    const d = window._lastVerdict;
+    if (!d) return;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const L = 20, W = 170, lh = 7;
+    let y = 20;
+
+    const wrap = (text, x, maxW) => {
+      const words = String(text).split(' ');
+      const lines = []; let line = '';
+      words.forEach(w => {
+        const test = line ? line + ' ' + w : w;
+        if (doc.getTextWidth(test) > maxW) { lines.push(line); line = w; }
+        else line = test;
+      });
+      if (line) lines.push(line);
+      return lines;
+    };
+
+    const addLines = (lines, indent = L) => {
+      lines.forEach(l => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.text(l, indent, y); y += lh;
+      });
+    };
+
+    // Header
+    doc.setFillColor(15, 32, 68);
+    doc.rect(0, 0, 210, 28, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+    doc.text('Regulatory Impact Assessment Report', L, 12);
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.text('Australian Red Cross Lifeblood  |  Generated: ' + new Date().toLocaleString(), L, 20);
+    doc.setTextColor(30, 41, 59);
+    y = 38;
+
+    // Verdict
+    doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+    doc.text('Verdict', L, y); y += 5;
+    doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+    doc.setTextColor(d.verdict === 'COMPLIANT' ? '#166534' : d.verdict === 'NON-COMPLIANT' ? '#991b1b' : '#92400e');
+    doc.text(d.verdict || '', L, y); y += 6;
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    if (d.risk_level) doc.text(`Risk: ${d.risk_level}   Confidence: ${d.confidence || ''}`, L, y);
+    y += 8;
+
+    // Query
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+    doc.text('Query', L, y); y += 5;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    addLines(wrap(d.query || '', L, W));
+    y += 3;
+
+    // Summary
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+    doc.text('Summary', L, y); y += 5;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    addLines(wrap(d.summary || '', L, W));
+    y += 3;
+
+    // Key findings
+    if (d.key_findings && d.key_findings.length) {
+      doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.text('Key Findings', L, y); y += 5;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+      d.key_findings.forEach((f, i) => {
+        addLines(wrap(`${i + 1}. ${f}`, L, W - 5));
+      });
+      y += 3;
+    }
+
+    // Citations
+    if (d.citations && d.citations.length) {
+      doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.text('Regulatory Citations', L, y); y += 5;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+      d.citations.forEach(c => {
+        doc.setFont('helvetica', 'bold');
+        addLines(wrap(`${c.source} — ${c.section}`, L, W));
+        doc.setFont('helvetica', 'normal');
+        addLines(wrap(c.relevance || '', L + 4, W - 4));
+        y += 2;
+      });
+      y += 1;
+    }
+
+    // Recommendation
+    if (d.recommendation) {
+      doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.text('Recommendation', L, y); y += 5;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+      addLines(wrap(d.recommendation, L, W));
+    }
+
+    // Footer
+    const pages = doc.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7); doc.setTextColor(148, 163, 184);
+      doc.text(`Page ${i} of ${pages}  |  Regulatory Impact Assessment Assistant`, L, 290);
+    }
+
+    doc.save(`compliance-assessment-${Date.now()}.pdf`);
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function setQuery(el) { document.getElementById('queryInput').value = el.textContent.trim(); }
 
   function toast(msg, type = '') {
     const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = type;
-    el.style.display = 'block';
+    el.textContent = msg; el.className = type; el.style.display = 'block';
     clearTimeout(el._t);
     el._t = setTimeout(() => el.style.display = 'none', 3500);
   }
@@ -474,232 +675,172 @@ Example: We want to share donor health records with a third-party analytics firm
     document.getElementById('loader').style.display = on ? 'flex' : 'none';
     document.getElementById('assessBtn').disabled = on;
     document.getElementById('errorBox').style.display = 'none';
-    if (on) {
-      document.getElementById('results').innerHTML = '';
-      hideClausePanels();
-    }
+    if (on) { document.getElementById('results').innerHTML = ''; hideClausePanels(); }
   }
 
   function showError(msg) {
     const el = document.getElementById('errorBox');
-    el.textContent = '⚠️ ' + msg;
-    el.style.display = 'block';
+    el.textContent = 'Error: ' + msg; el.style.display = 'block';
   }
 
   function hideClausePanels() {
     document.getElementById('clausesPanelDesktop').style.display = 'none';
-    document.getElementById('clausesPanelMobile').style.display = 'none';
+    document.getElementById('clausesPanelMobile').style.display  = 'none';
   }
 
-  function isMobile() { return window.innerWidth <= 960; }
+  function isMobile() { return window.innerWidth <= 1024; }
 
-  // ── Load document list ─────────────────────────────────────────────────────
-
+  // ── Documents ─────────────────────────────────────────────────────────────
   async function loadDocs() {
     try {
-      const r = await fetch('/api/documents');
+      const r    = await fetch('/api/documents', { headers: authHeaders() });
       const data = await r.json();
-      const el = document.getElementById('docList');
-
-      if (!data.files || data.files.length === 0) {
-        el.innerHTML = '<p class="empty-state">No documents indexed yet.<br>Upload files above to get started.</p>';
-        return;
+      const el   = document.getElementById('docList');
+      if (!data.files || !data.files.length) {
+        el.innerHTML = '<p class="empty-state">No documents indexed yet.</p>'; return;
       }
-
-      el.innerHTML = `<p style="font-size:0.75rem;color:#888;margin-bottom:0.5rem;">${data.total_chunks} chunks · ${data.files.length} file(s)</p>`;
+      el.innerHTML = `<p class="idx-summary">${data.total_chunks} chunks across ${data.files.length} file(s)</p>`;
       data.files.forEach(f => {
         const ext = f.filename.split('.').pop().toUpperCase();
         el.innerHTML += `
-          <div class="file-item">
-            <span class="file-ext">${ext}</span>
-            <span class="file-name">${f.filename}</span>
-            <span class="file-chunks">${f.chunks} chunks</span>
-            <button class="btn btn-danger" onclick="deleteDoc('${f.filename}')">✕</button>
+          <div class="file-row">
+            <span class="fext">${ext}</span>
+            <span class="fname">${f.filename}</span>
+            <span class="fchunks">${f.chunks}</span>
+            <button class="btn btn-remove" onclick="deleteDoc('${f.filename}')">Remove</button>
           </div>`;
       });
-    } catch (e) {
-      document.getElementById('docList').innerHTML = '<p class="empty-state">Could not load documents.</p>';
-    }
+    } catch { document.getElementById('docList').innerHTML = '<p class="empty-state">Could not load.</p>'; }
   }
   loadDocs();
 
   async function deleteDoc(filename) {
-    if (!confirm(`Delete "${filename}" from the index?`)) return;
-    try {
-      const r = await fetch(`/api/documents/${encodeURIComponent(filename)}`, { method: 'DELETE' });
-      if (!r.ok) throw new Error((await r.json()).detail);
-      toast(`Deleted ${filename}`, 'success');
-      loadDocs();
-    } catch (e) {
-      toast('Delete failed: ' + e.message, 'error');
-    }
+    if (!confirm(`Remove "${filename}"?`)) return;
+    const r = await fetch(`/api/documents/${encodeURIComponent(filename)}`,
+                          { method: 'DELETE', headers: authHeaders() });
+    if (r.ok) { toast('Removed ' + filename, 'success'); loadDocs(); }
+    else toast('Remove failed', 'error');
   }
 
   // ── Upload ────────────────────────────────────────────────────────────────
-
-  function onDragOver(e) {
-    e.preventDefault();
-    document.getElementById('uploadZone').classList.add('drag-over');
-  }
-  function onDragLeave(e) {
-    document.getElementById('uploadZone').classList.remove('drag-over');
-  }
-  function onDrop(e) {
-    e.preventDefault();
-    document.getElementById('uploadZone').classList.remove('drag-over');
-    uploadFiles(e.dataTransfer.files);
-  }
+  function onDragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('drag-over'); }
+  function onDragLeave()  { document.getElementById('uploadZone').classList.remove('drag-over'); }
+  function onDrop(e) { e.preventDefault(); document.getElementById('uploadZone').classList.remove('drag-over'); uploadFiles(e.dataTransfer.files); }
 
   async function uploadFiles(files) {
-    if (!files || files.length === 0) return;
-
-    const progressEl = document.getElementById('uploadProgress');
-    const barEl      = document.getElementById('progressBar');
-    const statusEl   = document.getElementById('uploadStatus');
-
-    progressEl.style.display = 'block';
-    barEl.style.width = '30%';
-    statusEl.textContent = `Uploading ${files.length} file(s)…`;
-
+    if (!files || !files.length) return;
+    const progEl = document.getElementById('uploadProgress');
+    const barEl  = document.getElementById('progressBar');
+    const statEl = document.getElementById('uploadStatus');
+    progEl.style.display = 'block'; barEl.style.width = '30%';
+    statEl.textContent = `Uploading ${files.length} file(s)...`;
     const form = new FormData();
     for (const f of files) form.append('files', f);
-
     try {
-      barEl.style.width = '60%';
-      const r = await fetch('/api/upload', { method: 'POST', body: form });
+      barEl.style.width = '70%';
+      const r    = await fetch('/api/upload', { method: 'POST', headers: authHeadersMultipart(), body: form });
       const data = await r.json();
-
       barEl.style.width = '100%';
-
-      const savedList  = data.saved.join(', ') || 'none';
-      const skippedMsg = data.skipped.length
-        ? ` Skipped: ${data.skipped.map(s => s.filename).join(', ')}`
-        : '';
-
-      statusEl.textContent = `✅ Indexed ${data.saved.length} file(s) — ${data.index.chunks} total chunks.${skippedMsg}`;
-      toast(`Uploaded: ${savedList}`, 'success');
-      loadDocs();
+      statEl.textContent = `Indexed ${data.saved.length} file(s). ${data.index.chunks} total chunks.`;
+      toast('Upload complete', 'success');
+      loadDocs(); loadActivity();
     } catch (e) {
-      statusEl.textContent = '❌ Upload failed: ' + e.message;
+      statEl.textContent = 'Upload failed: ' + e.message;
       toast('Upload failed', 'error');
     } finally {
-      setTimeout(() => {
-        progressEl.style.display = 'none';
-        barEl.style.width = '0%';
-        document.getElementById('fileInput').value = '';
-      }, 4000);
+      setTimeout(() => { progEl.style.display = 'none'; barEl.style.width = '0%'; document.getElementById('fileInput').value = ''; }, 4000);
     }
   }
 
   // ── Retrieve only ─────────────────────────────────────────────────────────
-
   async function retrieveOnly() {
     const query = document.getElementById('queryInput').value.trim();
     if (!query) { alert('Please enter a query.'); return; }
     setLoading(true);
     try {
-      const r = await fetch('/api/retrieve', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ query, top_k: parseInt(document.getElementById('topK').value) }),
-      });
+      const r    = await fetch('/api/retrieve', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ query, top_k: parseInt(document.getElementById('topK').value) }) });
       const data = await r.json();
       renderClauses(data.clauses);
       document.getElementById('results').innerHTML = `
-        <div class="card" style="margin-top:0;">
-          <p style="font-size:0.88rem;color:#556;">
-            Showing <strong>${data.clauses.length}</strong> retrieved chunks.
-            Click <em>Assess Compliance</em> for a full GPT verdict.
-          </p>
-        </div>`;
+        <div class="panel"><div class="panel-body">
+          <p style="font-size:0.835rem;color:var(--grey-600);">Showing <strong>${data.clauses.length}</strong> retrieved clause(s). Click <em>Assess Compliance</em> for a full verdict.</p>
+        </div></div>`;
+      loadActivity();
     } catch (e) { showError(e.message); }
     finally { setLoading(false); }
   }
 
-  // ── Full assessment ───────────────────────────────────────────────────────
-
+  // ── Assess ────────────────────────────────────────────────────────────────
   async function assess() {
     const query = document.getElementById('queryInput').value.trim();
     if (!query) { alert('Please enter a compliance query.'); return; }
     setLoading(true);
     try {
-      const r = await fetch('/api/assess', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ query, top_k: parseInt(document.getElementById('topK').value) }),
-      });
+      const r = await fetch('/api/assess', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ query, top_k: parseInt(document.getElementById('topK').value) }) });
       if (!r.ok) throw new Error((await r.json()).detail || 'Server error');
       const data = await r.json();
       renderVerdict(data);
       renderClauses(data.retrieved_clauses || []);
+      loadActivity();
     } catch (e) { showError(e.message); }
     finally { setLoading(false); }
   }
 
   // ── Render verdict ────────────────────────────────────────────────────────
-
   function renderVerdict(data) {
-    const verdictClass = (data.verdict || '').replace(/\s+/g, '-');
-    const icons = {
-      'COMPLIANT': '✅', 'NON-COMPLIANT': '❌',
-      'PARTIALLY COMPLIANT': '⚠️', 'NEEDS REVIEW': '🔎', 'INSUFFICIENT DATA': '📭',
-    };
-    const icon = icons[data.verdict] || '📋';
-
+    const vc = (data.verdict || 'NEEDS-REVIEW').replace(/\s+/g, '-');
     const findingsHtml = (data.key_findings && data.key_findings.length) ? `
-      <div class="section-title">Key Findings</div>
-      <ul class="findings-list">
-        ${data.key_findings.map(f => `<li>${f}</li>`).join('')}
-      </ul>` : '';
-
+      <div class="section-label">Key Findings</div>
+      <ul class="findings-list">${data.key_findings.map(f => `<li><span class="finding-dot"></span>${f}</li>`).join('')}</ul>` : '';
     const citationsHtml = (data.citations && data.citations.length) ? `
-      <div class="section-title">Supporting Citations</div>
-      ${data.citations.map(c => `
-        <div class="citation-card">
-          <div class="cite-header">${c.source || ''}</div>
-          <div class="cite-section">${c.section || ''}</div>
-          <div class="cite-relevance">${c.relevance || ''}</div>
-        </div>`).join('')}` : '';
+      <div class="section-label">Regulatory Citations</div>
+      ${data.citations.map(c => `<div class="citation-row"><div class="cite-top"><span class="cite-source">${c.source||''}</span><span class="cite-section">${c.section||''}</span></div><div class="cite-relevance">${c.relevance||''}</div></div>`).join('')}` : '';
+    const recHtml = data.recommendation ? `<div class="section-label">Recommendation</div><div class="rec-box">${data.recommendation}</div>` : '';
 
-    const recHtml = data.recommendation ? `
-      <div class="section-title">Recommendation</div>
-      <div class="recommendation-box">${data.recommendation}</div>` : '';
+    // Persist for refresh + activity click
+    window._lastVerdict = data;
+    try {
+      const history = JSON.parse(localStorage.getItem('ria_history') || '[]');
+      history.unshift({ ts: new Date().toISOString(), ...data });
+      localStorage.setItem('ria_history', JSON.stringify(history.slice(0, 20)));
+    } catch(e) {}
 
     document.getElementById('results').innerHTML = `
-      <div class="card" style="margin-top:0;">
-        <div class="verdict-banner ${verdictClass}">
-          <div class="icon">${icon}</div>
-          <div>
-            <h3>${data.verdict || 'Assessment Complete'}</h3>
-            <p>${data.summary || ''}</p>
-            <div class="badges">
-              ${data.risk_level  ? `<span class="badge badge-risk-${data.risk_level}">Risk: ${data.risk_level}</span>` : ''}
-              ${data.confidence  ? `<span class="badge badge-conf-${data.confidence}">Confidence: ${data.confidence}</span>` : ''}
+      <div class="verdict-panel v-${vc}">
+        <div class="verdict-header">
+          <div class="verdict-indicator"></div>
+          <div style="flex:1;">
+            <div class="verdict-label">${data.verdict || 'Assessment'}</div>
+            <div class="verdict-summary">${data.summary || ''}</div>
+            <div class="verdict-badges">
+              ${data.risk_level ? `<span class="vbadge badge-risk-${data.risk_level}">Risk: ${data.risk_level}</span>` : ''}
+              ${data.confidence ? `<span class="vbadge badge-conf-${data.confidence}">Confidence: ${data.confidence}</span>` : ''}
             </div>
           </div>
         </div>
-        ${findingsHtml}
-        ${citationsHtml}
-        ${recHtml}
+        <div class="verdict-body">${findingsHtml}${citationsHtml}${recHtml}</div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:0.6rem;">
+        <button class="btn btn-outline" onclick="downloadPDF()" style="font-size:0.78rem;">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download as PDF
+        </button>
       </div>`;
   }
 
-  // ── Render retrieved clauses ──────────────────────────────────────────────
-
+  // ── Render clauses ────────────────────────────────────────────────────────
   function renderClauses(clauses) {
     if (!clauses || !clauses.length) return;
-
-    const html = clauses.map((c, i) => `
-      <div class="clause-item">
-        <div class="clause-header" onclick="toggleClause('c${i}')">
+    const html = clauses.map((c, i) => {
+      const pct = (c.similarity_score * 100).toFixed(1);
+      return `<div class="clause-item">
+        <div class="clause-hdr" onclick="toggleClause('c${i}')">
           <span>${c.title}</span>
-          <span class="score-pill">${(c.similarity_score * 100).toFixed(1)}%</span>
+          <div class="rel-wrap"><span class="rel-pct">${pct}%</span><div class="rel-track"><div class="rel-fill" style="width:${Math.min(pct*2,100)}%"></div></div></div>
         </div>
-        <div class="clause-body" id="c${i}">
-          <div class="clause-source">${c.source} · ${c.section}</div>
-          ${c.content}
-        </div>
-      </div>`).join('');
+        <div class="clause-body" id="c${i}"><div class="clause-meta">${c.source} &middot; ${c.section}</div>${c.content}</div>
+      </div>`;
+    }).join('');
 
     if (isMobile()) {
       document.getElementById('clausesListMobile').innerHTML = html;
@@ -714,6 +855,91 @@ Example: We want to share donor health records with a third-party analytics firm
     const el = document.getElementById(id);
     el.style.display = el.style.display === 'block' ? 'none' : 'block';
   }
+
+  // ── Restore last result on refresh ────────────────────────────────────────
+  (function restoreLastResult() {
+    try {
+      const history = JSON.parse(localStorage.getItem('ria_history') || '[]');
+      if (history.length) {
+        window._lastVerdict = history[0];
+        renderVerdict(history[0]);
+        renderClauses(history[0].retrieved_clauses || []);
+      }
+    } catch(e) {}
+  })();
+
+  // ── Activity log ──────────────────────────────────────────────────────────
+  let _myActivity = [];
+
+  async function loadActivity() {
+    try {
+      const r    = await fetch('/api/my-activity', { headers: authHeaders() });
+      const data = await r.json();
+      _myActivity = data.activity || [];
+      const el   = document.getElementById('activityList');
+      if (!_myActivity.length) {
+        el.innerHTML = '<p class="empty-state">No activity yet. Start by running a query.</p>'; return;
+      }
+      el.innerHTML = _myActivity.map((a, i) => {
+        const isAssess = a.action === 'ASSESS';
+        return `
+          <div class="activity-row ${isAssess ? 'activity-clickable' : ''}"
+               ${isAssess ? `onclick="restoreActivity(${i})" title="Click to view this assessment"` : ''}>
+            <div class="act-top">
+              <span class="act-badge act-${a.action}">${a.action}</span>
+              ${a.verdict ? `<span class="vbadge badge-risk-${a.risk_level||'LOW'}" style="font-size:0.6rem;">${a.verdict}</span>` : ''}
+              <span class="act-time">${a.timestamp}</span>
+            </div>
+            <div class="act-detail">${a.query || a.document || a.details || ''}</div>
+          </div>`;
+      }).join('');
+    } catch { document.getElementById('activityList').innerHTML = '<p class="empty-state">Could not load activity.</p>'; }
+  }
+
+  function restoreActivity(idx) {
+    const a = _myActivity[idx];
+    if (!a || a.action !== 'ASSESS') return;
+    // Try to find full verdict in localStorage history
+    try {
+      const history = JSON.parse(localStorage.getItem('ria_history') || '[]');
+      const match   = history.find(h => h.query === a.query);
+      if (match) {
+        window._lastVerdict = match;
+        renderVerdict(match);
+        renderClauses(match.retrieved_clauses || []);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+    } catch(e) {}
+    // Fallback: show what we have from the log
+    renderVerdict({
+      verdict:       a.verdict,
+      confidence:    '',
+      summary:       a.details || '',
+      key_findings:  [],
+      citations:     [],
+      recommendation:'',
+      risk_level:    a.risk_level,
+      query:         a.query,
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function downloadMyActivity() {
+    if (!_myActivity.length) { toast('No activity to download', ''); return; }
+    const headers = ['timestamp','action','query','document','verdict','risk_level','details'];
+    const rows    = [headers.join(',')];
+    _myActivity.forEach(a => {
+      rows.push(headers.map(h => `"${(a[h]||'').replace(/"/g,'""')}"`).join(','));
+    });
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href     = URL.createObjectURL(blob);
+    link.download = `my-activity-${username}.csv`;
+    link.click();
+  }
+
+  loadActivity();
 </script>
 
 </body>
