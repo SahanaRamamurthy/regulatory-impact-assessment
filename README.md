@@ -1,21 +1,21 @@
 # Regulatory Impact Assessment Assistant
 
-An AI-powered compliance analysis system built with a Retrieval-Augmented Generation (RAG) pipeline. Healthcare governance teams can upload regulatory documents, query policies using text or voice, and receive structured compliance verdicts with evidence-backed citations — all within a secure, authenticated web application.
+An AI-powered compliance analysis system built with a Retrieval-Augmented Generation (RAG) pipeline. Healthcare governance teams can upload regulatory documents, query policies using text or voice, and receive structured compliance verdicts with evidence-backed citations - all within a secure, authenticated web application.
 
 ---
 
 ## Features
 
-- **RAG Pipeline** — TF-IDF vectorization and cosine similarity retrieves the most relevant regulatory clauses for any query
-- **AI Compliance Verdicts** — Claude (Anthropic) generates structured assessments: `COMPLIANT`, `NON-COMPLIANT`, `PARTIALLY COMPLIANT`, or `NEEDS REVIEW`
-- **Multi-format Document Support** — Upload PDF, Word, Excel, PowerPoint, CSV, JSON, TXT, or Markdown files
-- **Voice Input** — Speak your query using the built-in microphone button (Web Speech API, no extra setup)
-- **PDF Export** — Download any compliance assessment as a formatted PDF report
-- **User Authentication** — Login and sign-up system with role-based access (user / admin)
-- **Super Admin Dashboard** — View all users, full activity log, and export data to Excel
-- **Activity Logging** — Every query, upload, login, and action is logged to CSV and Excel in real time
-- **My Activity History** — Users can view, click to restore, and download their own query history
-- **FastAPI Backend** — REST API with full authentication on all endpoints
+- **RAG Pipeline** - TF-IDF vectorization and cosine similarity retrieves the most relevant regulatory clauses for any query
+- **AI Compliance Verdicts** - Claude (Anthropic) generates structured assessments: `COMPLIANT`, `NON-COMPLIANT`, `PARTIALLY COMPLIANT`, or `NEEDS REVIEW`
+- **Multi-format Document Support** - Upload PDF, Word, Excel, PowerPoint, CSV, JSON, TXT, or Markdown files
+- **Voice Input** - Speak your query using the built-in microphone button (Web Speech API, no extra setup)
+- **PDF Export** - Download any compliance assessment as a formatted PDF report
+- **User Authentication** - Login and sign-up system with role-based access (user / admin)
+- **Super Admin Dashboard** - View all users, full activity log, and export data to Excel
+- **Activity Logging** - Every query, upload, login, and action is logged to CSV and Excel in real time
+- **My Activity History** - Users can view, click to restore, and download their own query history
+- **FastAPI Backend** - REST API with full authentication on all endpoints
 
 ---
 
@@ -39,12 +39,12 @@ An AI-powered compliance analysis system built with a Retrieval-Augmented Genera
 
 ```
 RAG/
-├── main.py                  — FastAPI backend, all API routes
-├── rag_engine.py            — TF-IDF retrieval + Claude verdict generation
-├── document_loader.py       — Multi-format file parser and chunker
-├── auth.py                  — User registration, login, role management
-├── activity_logger.py       — Logs all user actions to CSV + Excel
-├── docs/                    — Drop your regulatory documents here
+├── main.py                  - FastAPI backend, all API routes
+├── rag_engine.py            - TF-IDF retrieval + Claude verdict generation
+├── document_loader.py       - Multi-format file parser and chunker
+├── auth.py                  - User registration, login, role management
+├── activity_logger.py       - Logs all user actions to CSV + Excel
+├── docs/                    - Drop your regulatory documents here
 │   ├── HIPAA_Privacy_Rule.txt
 │   ├── HIPAA_Security_Rule.txt
 │   ├── Australian_Red_Cross_Policies.txt
@@ -52,17 +52,17 @@ RAG/
 │   ├── Therapeutic_Goods_Act.txt
 │   ├── GDPR.txt
 │   └── (your uploaded files...)
-├── data/                    — Auto-generated, not committed to git
+├── data/                    - Auto-generated, not committed to git
 │   ├── users.csv / users.xlsx
 │   └── activity.csv / activity.xlsx
 ├── static/
-│   ├── login.html           — Login and sign-up page
-│   ├── index.html           — Main user application
-│   ├── admin.html           — Super admin dashboard
-│   └── RAG-nobackground.png — Application logo
+│   ├── login.html           - Login and sign-up page
+│   ├── index.html           - Main user application
+│   ├── admin.html           - Super admin dashboard
+│   └── RAG-nobackground.png - Application logo
 ├── requirements.txt
-├── .env                     — API key (not committed to git)
-└── .env.example             — Template for environment variables
+├── .env                     - API key (not committed to git)
+└── .env.example             - Template for environment variables
 ```
 
 ---
@@ -142,12 +142,12 @@ The admin is redirected to `/admin` after login. Regular users go to `/app`.
 
 ### Voice Input
 - Click the **Speak** button and speak your query
-- The button pulses red while listening — stops automatically when you finish
+- The button pulses red while listening - stops automatically when you finish
 - Works on Chrome and Edge (not Firefox)
 
 ### Retrieve Only
 - Click **Retrieve Clauses Only** to see matching document chunks without an AI call
-- Instant and free — useful for checking document relevance
+- Instant and free - useful for checking document relevance
 
 ### Upload Documents
 - Drag and drop files onto the upload zone, or click to browse
@@ -165,11 +165,11 @@ The admin is redirected to `/admin` after login. Regular users go to `/app`.
 
 Access at `http://localhost:8000/admin` (admin login required).
 
-- **Stats** — total users, queries, uploads, and activity count
-- **Users Table** — all registered accounts with roles and login history
-- **Activity Log** — every action across all users, searchable
-- **Export Users** — download `users.xlsx`
-- **Export Activity** — download `activity.xlsx`
+- **Stats** - total users, queries, uploads, and activity count
+- **Users Table** - all registered accounts with roles and login history
+- **Activity Log** - every action across all users, searchable
+- **Export Users** - download `users.xlsx`
+- **Export Activity** - download `activity.xlsx`
 
 ---
 
@@ -216,7 +216,7 @@ Then either restart the server or click **Refresh** in the web UI. The document 
 
 ## Cost
 
-This project uses **Claude Haiku** — Anthropic's fastest and most affordable model.
+This project uses **Claude Haiku** - Anthropic's fastest and most affordable model.
 
 - ~$0.001 per compliance query (less than a tenth of a cent)
 - $5 of API credits ≈ 3,000–5,000 queries
