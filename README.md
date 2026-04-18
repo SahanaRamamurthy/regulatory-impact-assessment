@@ -225,4 +225,4 @@ This project uses **Claude Haiku** — Anthropic's fastest and most affordable m
 
 ## Background
 
-Built as part of an internship at the **Australian Red Cross Lifeblood** to support the governance team in assessing healthcare regulatory compliance. The system analyses documents such as HIPAA rules, Australian Privacy Principles, Therapeutic Goods Act requirements, and internal Red Cross policies.
+Built to support governance teams in assessing healthcare regulatory compliance. The system analyses documents such as HIPAA rules, Australian Privacy Principles, Therapeutic Goods Act requirements, and internal organisational policies.

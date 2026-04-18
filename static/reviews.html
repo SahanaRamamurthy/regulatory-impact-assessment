@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Reviews — Regulatory Impact Assessment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/RAG-nobackground.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0f2044; --navy-mid: #1a3260; --red: #b91c1c;
+      --grey-50: #f8fafc; --grey-100: #f1f5f9; --grey-200: #e2e8f0;
+      --grey-400: #94a3b8; --grey-600: #475569; --grey-800: #1e293b;
+      --white: #ffffff; --amber: #d97706;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--grey-100); color: var(--grey-800); font-size: 14px; min-height: 100vh; }
+
+    nav {
+      background: var(--navy); height: 68px;
+      display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-title { font-size: 0.875rem; font-weight: 600; color: white; letter-spacing: -0.01em; }
+    .nav-sub   { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+    .nav-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.1); }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+    .nav-user  { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+    .nav-username { color: white; font-weight: 600; }
+    .btn-nav { padding: 0.35rem 0.75rem; border-radius: 5px; font-size: 0.75rem; font-weight: 600; font-family: inherit; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: rgba(255,255,255,0.7); transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; }
+    .btn-nav:hover { background: rgba(255,255,255,0.08); color: white; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    .page-header { margin-bottom: 1.75rem; }
+    .page-header h1 { font-size: 1.35rem; font-weight: 700; color: var(--navy); letter-spacing: -0.02em; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.6rem; }
+    .page-header p  { font-size: 0.875rem; color: var(--grey-600); }
+
+    .review-card {
+      background: white; border: 1px solid var(--grey-200); border-radius: 12px;
+      margin-bottom: 1.25rem; overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .review-card-header {
+      background: var(--grey-50); border-bottom: 1px solid var(--grey-200);
+      padding: 0.875rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    }
+    .review-card-body { padding: 1.25rem; }
+
+    .meta-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey-400); }
+    .meta-val   { font-size: 0.8rem; color: var(--grey-600); font-weight: 500; }
+
+    .query-block {
+      font-size: 0.92rem; color: var(--grey-800); font-style: italic;
+      background: var(--grey-50); border-left: 3px solid #f59e0b;
+      padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; margin-bottom: 1rem;
+    }
+
+    .response-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--grey-400); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .response-block {
+      font-size: 0.9rem; color: var(--grey-800); line-height: 1.7;
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+
+    .verdict-tag { font-size: 0.62rem; font-weight: 700; padding: 0.12rem 0.4rem; border-radius: 3px; }
+    .v-NEEDS-REVIEW { background: #fef3c7; color: #92400e; }
+
+    .empty-state {
+      text-align: center; padding: 4rem 2rem;
+      background: white; border: 1px solid var(--grey-200); border-radius: 12px;
+    }
+    .empty-state svg { width: 40px; height: 40px; stroke: var(--grey-400); fill: none; stroke-width: 1.5; margin-bottom: 1rem; }
+    .empty-state h3 { font-size: 1rem; color: var(--grey-600); font-weight: 600; margin-bottom: 0.4rem; }
+    .empty-state p  { font-size: 0.85rem; color: var(--grey-400); }
+
+    .badge-count { background: #f59e0b; color: white; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <img src="/static/RAG-nobackground.png" alt="Logo" style="height:52px;width:52px;object-fit:contain;flex-shrink:0;" />
+  <div>
+    <div class="nav-title">Regulatory Impact Assessment</div>
+    <div class="nav-sub">Jeevan Blood Bank</div>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-right">
+    <a href="/app" class="btn-nav">Back to App</a>
+    <span class="nav-user">Signed in as <span class="nav-username" id="navUsername"></span></span>
+    <button class="btn-nav" onclick="doLogout()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <h1>
+      <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:#d97706;fill:none;stroke-width:2;flex-shrink:0;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Admin Reviews
+      <span class="badge-count" id="reviewCount" style="display:none;"></span>
+    </h1>
+    <p>Your queries have been reviewed by the governance team. If you have further questions, search again in the system or contact us.</p>
+  </div>
+
+  <div id="reviewsList">
+    <div style="color:var(--grey-400);font-size:0.85rem;text-align:center;padding:2rem;">Loading...</div>
+  </div>
+
+  <!-- Contact banner -->
+  <div style="margin-top:2rem;background:white;border:1px solid var(--grey-200);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:flex-start;gap:1rem;">
+    <div style="width:36px;height:36px;background:#dbeafe;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#1d4ed8;fill:none;stroke-width:2;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012.06 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+    </div>
+    <div>
+      <div style="font-size:0.82rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem;">Still have questions?</div>
+      <div style="font-size:0.83rem;color:var(--grey-600);line-height:1.6;">
+        Try searching again in the system — our RAG engine may surface additional regulatory clauses relevant to your query.<br>
+        Or contact the Jeevan Blood Bank Governance Team directly:<br>
+        <strong style="color:var(--navy);">+61 2 8845 3200</strong> &nbsp;|&nbsp;
+        <a href="mailto:governance@jeevanbloodbank.org" style="color:#1d4ed8;">governance@jeevanbloodbank.org</a> &nbsp;|&nbsp;
+        Mon–Fri, 9:00 am – 5:00 pm AEST
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const token    = localStorage.getItem('ria_token');
+  const username = localStorage.getItem('ria_username');
+  const role     = localStorage.getItem('ria_role');
+
+  if (!token) window.location.href = '/';
+  document.getElementById('navUsername').textContent = username || '';
+
+  function authHeaders() {
+    return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+  }
+
+  async function doLogout() {
+    await fetch('/api/logout', { method: 'POST', headers: authHeaders() });
+    localStorage.clear();
+    window.location.href = '/';
+  }
+
+  async function loadReviews() {
+    try {
+      const r = await fetch('/api/my-reviews', { headers: authHeaders() });
+      const d = await r.json();
+      const reviews = (d.reviews || []).slice().reverse();
+      const list = document.getElementById('reviewsList');
+
+      // Mark all as seen
+      localStorage.setItem('ria_reviews_seen', reviews.length);
+
+      if (!reviews.length) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <h3>No reviews yet</h3>
+            <p>When an admin reviews one of your NEEDS REVIEW queries, the response will appear here.</p>
+          </div>`;
+        return;
+      }
+
+      const badge = document.getElementById('reviewCount');
+      badge.textContent = reviews.length;
+      badge.style.display = 'inline-flex';
+
+      list.innerHTML = reviews.map(rv => `
+        <div class="review-card">
+          <div class="review-card-header">
+            <div>
+              <div class="meta-label">Reviewed by</div>
+              <div class="meta-val" style="font-weight:600;color:var(--navy);">${rv.admin_username}</div>
+            </div>
+            <div style="margin-left:auto;text-align:right;">
+              <div class="meta-label">Date &amp; Time</div>
+              <div class="meta-val">${rv.reviewed_at}</div>
+            </div>
+            <span style="align-self:center;background:#dcfce7;color:#166534;font-size:0.62rem;font-weight:700;padding:0.12rem 0.4rem;border-radius:3px;">REVIEWED</span>
+          </div>
+          <div class="review-card-body">
+            <div class="meta-label" style="margin-bottom:0.4rem;">Your Query</div>
+            <div class="query-block">"${rv.query}"</div>
+            <div class="response-label">
+              <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#d97706;fill:none;stroke-width:2.5;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              Admin Response
+            </div>
+            <div class="response-block">${rv.admin_response}</div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      document.getElementById('reviewsList').innerHTML = '<div class="empty-state"><h3>Could not load reviews</h3><p>Please try refreshing the page.</p></div>';
+    }
+  }
+
+  loadReviews();
+</script>
+</body>
+</html>
