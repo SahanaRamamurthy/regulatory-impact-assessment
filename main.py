@@ -17,8 +17,10 @@ load_dotenv()
 
 import auth as Auth
 import activity_logger as ActivityLog
+import reviews as Reviews
 from auth import USERS_CSV, excel_bytes
 from activity_logger import ACTIVITY_CSV
+from reviews import REVIEWS_CSV
 from document_loader import DOCS_DIR, EXTRACTORS, save_uploaded_file
 from rag_engine import RAGEngine
 
@@ -78,6 +80,13 @@ class ComplianceQuery(BaseModel):
 class RetrieveQuery(BaseModel):
     query: str
     top_k: int = 4
+
+class ReviewSubmit(BaseModel):
+    log_id: str
+    username: str
+    query: str
+    original_verdict: str
+    admin_response: str
 
 
 # ── Pages ─────────────────────────────────────────────────────────────────────
@@ -197,6 +206,29 @@ async def list_documents(authorization: Optional[str] = Header(None)):
             "supported_formats": SUPPORTED_EXTENSIONS}
 
 
+@app.get("/api/documents/{filename}/view")
+async def view_document(filename: str, authorization: Optional[str] = Header(None)):
+    require_auth(authorization)
+    target = DOCS_DIR / filename
+    if not target.exists():
+        raise HTTPException(status_code=404, detail=f"File '{filename}' not found.")
+    ext = target.suffix.lower()
+    # For PDFs serve directly
+    if ext == ".pdf":
+        return FileResponse(str(target), media_type="application/pdf")
+    # For text-based files, extract and return plain text
+    from document_loader import EXTRACTORS
+    extractor = EXTRACTORS.get(ext)
+    if not extractor:
+        raise HTTPException(status_code=415, detail="Preview not supported for this file type.")
+    try:
+        pages = extractor(target)
+        full_text = "\n\n".join(text for text, _ in pages)
+        return {"filename": filename, "text": full_text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.delete("/api/documents/{filename}")
 async def delete_document(filename: str, authorization: Optional[str] = Header(None)):
     username = require_auth(authorization)
@@ -248,6 +280,50 @@ async def all_users(authorization: Optional[str] = Header(None)):
         {k: v for k, v in u.items() if k != "password_hash"} for u in users
     ]}
 
+
+@app.get("/api/admin/needs-review")
+async def needs_review(authorization: Optional[str] = Header(None)):
+    require_admin(authorization)
+    return {"pending": Reviews.get_pending_reviews()}
+
+
+@app.post("/api/admin/submit-review")
+async def submit_review(body: ReviewSubmit, authorization: Optional[str] = Header(None)):
+    admin_username = require_admin(authorization)
+    row = Reviews.submit_review(
+        log_id=body.log_id,
+        username=body.username,
+        query=body.query,
+        original_verdict=body.original_verdict,
+        admin_username=admin_username,
+        admin_response=body.admin_response,
+    )
+    return {"ok": True, "review": row}
+
+
+@app.get("/api/admin/all-reviews")
+async def all_reviews(authorization: Optional[str] = Header(None)):
+    require_admin(authorization)
+    return {"reviews": Reviews.get_all_reviews()}
+
+
+@app.get("/api/export/reviews")
+async def export_reviews(authorization: Optional[str] = Header(None)):
+    require_admin(authorization)
+    return Response(content=excel_bytes(REVIEWS_CSV),
+                    media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": "attachment; filename=reviews.xlsx"})
+
+
+@app.get("/api/my-reviews")
+async def my_reviews(authorization: Optional[str] = Header(None)):
+    username = require_auth(authorization)
+    return {"reviews": Reviews.get_user_reviews(username)}
+
+
+@app.get("/reviews", response_class=FileResponse)
+async def reviews_page():
+    return FileResponse("static/reviews.html")
 
 @app.get("/admin", response_class=FileResponse)
 async def admin_page():

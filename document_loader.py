@@ -1,84 +1,128 @@
 """
-Document Loader — parses files from the docs/ folder.
-
-Supported formats: PDF, DOCX, XLSX, PPTX, TXT, CSV, MD, JSON
-Each file is split into chunks so retrieval is precise.
+Document Loader — parses files from the docs/ folder with rich metadata extraction.
+Extracts page numbers, section headings, version, and effective date from filenames and content.
 """
 
 import csv
-import io
 import json
 import os
 import re
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 
 DOCS_DIR = Path(__file__).parent / "docs"
-CHUNK_SIZE = 600        # characters per chunk
-CHUNK_OVERLAP = 100     # overlap between chunks
+CHUNK_SIZE = 600
+CHUNK_OVERLAP = 100
 
 
-# ── Per-format extractors ─────────────────────────────────────────────────────
+# ── Metadata extraction from filename ────────────────────────────────────────
 
-def _extract_pdf(path: Path) -> str:
+def _extract_file_metadata(path: Path) -> Dict[str, str]:
+    """Extract version and effective date from filename patterns."""
+    name = path.stem
+    version = ""
+    effective_date = ""
+
+    # Version: v1, v2.1, version_3, _v3 etc.
+    v_match = re.search(r'[_\-\s]v(\d+[\d.]*)', name, re.IGNORECASE)
+    if not v_match:
+        v_match = re.search(r'version[_\-\s]*(\d+[\d.]*)', name, re.IGNORECASE)
+    if v_match:
+        version = f"v{v_match.group(1)}"
+
+    # Date: 2024-07-01, 2024_07, 20240701 etc.
+    d_match = re.search(r'(\d{4}[-_]\d{2}[-_]\d{2})', name)
+    if not d_match:
+        d_match = re.search(r'(\d{4}[-_]\d{2})', name)
+    if d_match:
+        effective_date = d_match.group(1).replace("_", "-")
+
+    return {"version": version, "effective_date": effective_date}
+
+
+def _detect_section(text: str) -> str:
+    """Try to detect a section heading at the start of a chunk."""
+    lines = text.strip().split("\n")
+    for line in lines[:3]:
+        line = line.strip()
+        # Looks like a heading: short, possibly numbered, not ending with period
+        if line and len(line) < 120 and not line.endswith("."):
+            if re.match(r'^(\d+[\.\d]*\s|[A-Z][A-Z\s]{3,}$|#{1,4}\s)', line):
+                return line[:80]
+    return ""
+
+
+# ── Per-format extractors (with page tracking) ────────────────────────────────
+
+def _extract_pdf(path: Path) -> List[Tuple[str, int]]:
+    """Returns list of (text, page_number) tuples."""
     from pypdf import PdfReader
     reader = PdfReader(str(path))
-    return "\n".join(page.extract_text() or "" for page in reader.pages)
+    pages = []
+    for i, page in enumerate(reader.pages, 1):
+        text = page.extract_text() or ""
+        if text.strip():
+            pages.append((text, i))
+    return pages
 
 
-def _extract_docx(path: Path) -> str:
+def _extract_docx(path: Path) -> List[Tuple[str, int]]:
     from docx import Document
     doc = Document(str(path))
     parts = []
     for para in doc.paragraphs:
         if para.text.strip():
             parts.append(para.text.strip())
-    # Also pull text from tables
     for table in doc.tables:
         for row in table.rows:
             row_text = " | ".join(cell.text.strip() for cell in row.cells if cell.text.strip())
             if row_text:
                 parts.append(row_text)
-    return "\n".join(parts)
+    return [("\n".join(parts), None)]
 
 
-def _extract_xlsx(path: Path) -> str:
+def _extract_xlsx(path: Path) -> List[Tuple[str, int]]:
     from openpyxl import load_workbook
     wb = load_workbook(str(path), data_only=True)
-    parts = []
-    for sheet in wb.worksheets:
-        parts.append(f"[Sheet: {sheet.title}]")
+    pages = []
+    for i, sheet in enumerate(wb.worksheets, 1):
+        rows = []
+        rows.append(f"[Sheet: {sheet.title}]")
         for row in sheet.iter_rows(values_only=True):
             row_text = " | ".join(str(v) for v in row if v is not None)
             if row_text.strip():
-                parts.append(row_text)
-    return "\n".join(parts)
+                rows.append(row_text)
+        if rows:
+            pages.append(("\n".join(rows), i))
+    return pages
 
 
-def _extract_pptx(path: Path) -> str:
+def _extract_pptx(path: Path) -> List[Tuple[str, int]]:
     from pptx import Presentation
     prs = Presentation(str(path))
-    parts = []
+    pages = []
     for i, slide in enumerate(prs.slides, 1):
-        parts.append(f"[Slide {i}]")
+        parts = [f"[Slide {i}]"]
         for shape in slide.shapes:
             if hasattr(shape, "text") and shape.text.strip():
                 parts.append(shape.text.strip())
-    return "\n".join(parts)
+        if len(parts) > 1:
+            pages.append(("\n".join(parts), i))
+    return pages
 
 
-def _extract_csv(path: Path) -> str:
+def _extract_csv(path: Path) -> List[Tuple[str, int]]:
     with open(path, newline="", encoding="utf-8", errors="ignore") as f:
         reader = csv.reader(f)
-        return "\n".join(" | ".join(row) for row in reader if any(c.strip() for c in row))
+        text = "\n".join(" | ".join(row) for row in reader if any(c.strip() for c in row))
+    return [(text, None)]
 
 
-def _extract_txt(path: Path) -> str:
-    return path.read_text(encoding="utf-8", errors="ignore")
+def _extract_txt(path: Path) -> List[Tuple[str, int]]:
+    return [(path.read_text(encoding="utf-8", errors="ignore"), None)]
 
 
-def _extract_json(path: Path) -> str:
-    """Recursively flatten a JSON structure into readable key: value lines."""
+def _extract_json(path: Path) -> List[Tuple[str, int]]:
     def flatten(obj, prefix=""):
         lines = []
         if isinstance(obj, dict):
@@ -93,9 +137,8 @@ def _extract_json(path: Path) -> str:
             if val:
                 lines.append(f"{prefix}: {val}" if prefix else val)
         return lines
-
     data = json.loads(path.read_text(encoding="utf-8", errors="ignore"))
-    return "\n".join(flatten(data))
+    return [("\n".join(flatten(data)), None)]
 
 
 EXTRACTORS = {
@@ -116,17 +159,13 @@ EXTRACTORS = {
 # ── Chunking ──────────────────────────────────────────────────────────────────
 
 def _chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> List[str]:
-    """Split text into overlapping chunks, splitting on sentence/paragraph boundaries."""
-    # Normalise whitespace
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     if not text:
         return []
-
     chunks = []
     start = 0
     while start < len(text):
         end = min(start + chunk_size, len(text))
-        # Try to break at a sentence or newline boundary
         if end < len(text):
             for boundary in ["\n\n", "\n", ". ", "! ", "? "]:
                 idx = text.rfind(boundary, start, end)
@@ -143,10 +182,6 @@ def _chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OV
 # ── Public API ────────────────────────────────────────────────────────────────
 
 def load_documents_from_folder(folder: Path = DOCS_DIR) -> List[Dict[str, Any]]:
-    """
-    Scan the docs/ folder, extract text from every supported file,
-    and return a flat list of chunk dicts compatible with the RAG engine.
-    """
     folder.mkdir(parents=True, exist_ok=True)
     results = []
 
@@ -156,30 +191,41 @@ def load_documents_from_folder(folder: Path = DOCS_DIR) -> List[Dict[str, Any]]:
         ext = path.suffix.lower()
         extractor = EXTRACTORS.get(ext)
         if extractor is None:
-            continue  # skip unsupported formats silently
+            continue
 
         try:
-            raw_text = extractor(path)
+            pages = extractor(path)
         except Exception as e:
             print(f"[loader] Could not parse {path.name}: {e}")
             continue
 
-        chunks = _chunk_text(raw_text)
-        for idx, chunk in enumerate(chunks):
-            results.append({
-                "id":               f"{path.stem}-chunk{idx}",
-                "source":           path.name,
-                "section":          f"Chunk {idx + 1} of {len(chunks)}",
-                "title":            f"{path.stem} (part {idx + 1})",
-                "content":          chunk,
-                "similarity_score": 0.0,   # filled in by the RAG engine
-            })
+        file_meta = _extract_file_metadata(path)
+
+        chunk_idx = 0
+        for page_text, page_num in pages:
+            chunks = _chunk_text(page_text)
+            total = len(chunks)
+            for i, chunk in enumerate(chunks):
+                section = _detect_section(chunk)
+                page_label = f"p.{page_num}" if page_num else ""
+                results.append({
+                    "id":               f"{path.stem}-chunk{chunk_idx}",
+                    "source":           path.name,
+                    "page":             page_num,
+                    "page_label":       page_label,
+                    "section":          section or f"Section {chunk_idx + 1}",
+                    "title":            path.stem.replace("_", " ").replace("-", " "),
+                    "version":          file_meta["version"],
+                    "effective_date":   file_meta["effective_date"],
+                    "content":          chunk,
+                    "similarity_score": 0.0,
+                })
+                chunk_idx += 1
 
     return results
 
 
 def save_uploaded_file(filename: str, data: bytes) -> Path:
-    """Save an uploaded file to the docs/ folder and return its path."""
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
     dest = DOCS_DIR / filename
     dest.write_bytes(data)
